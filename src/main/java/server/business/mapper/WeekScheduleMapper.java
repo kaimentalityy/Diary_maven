@@ -1,5 +1,6 @@
 package server.business.mapper;
 
+import org.springframework.stereotype.Component;
 import server.data.entity.WeekSchedule;
 import server.presentation.dto.request.WeekScheduleRqDto;
 import server.presentation.dto.response.ErrorDto;
@@ -8,6 +9,7 @@ import server.presentation.dto.response.WeekScheduleRespDto;
 
 import java.util.Optional;
 
+@Component
 public class WeekScheduleMapper {
 
     public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {
@@ -18,14 +20,14 @@ public class WeekScheduleMapper {
     }
 
     public WeekScheduleRespDto toWeekScheduleRespDto(WeekSchedule weekSchedule) {
-        return new WeekScheduleRespDto(weekSchedule.getId(), weekSchedule.getWeek_day_id(), weekSchedule.getLesson_id(), weekSchedule.getLesson_number());
+        return new WeekScheduleRespDto(weekSchedule.getId(), weekSchedule.getWeekDayId(), weekSchedule.getLessonId(), weekSchedule.getLessonNumber());
     }
 
     public WeekSchedule toWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
         WeekSchedule weekSchedule = new WeekSchedule();
-        weekSchedule.setWeek_day_id(weekScheduleRqDto.day_of_week());
-        weekSchedule.setLesson_id(weekScheduleRqDto.lesson_id());
-        weekSchedule.setLesson_number(weekScheduleRqDto.lesson_number());
+        weekSchedule.setWeekDayId(weekScheduleRqDto.day_of_week());
+        weekSchedule.setLessonId(weekScheduleRqDto.lesson_id());
+        weekSchedule.setLessonNumber(weekScheduleRqDto.lesson_number());
         return weekSchedule;
     }
 }

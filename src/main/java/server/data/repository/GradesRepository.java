@@ -33,8 +33,8 @@ public class GradesRepository {
             PreparedStatement statement = connection.prepareStatement(query);
 
             statement.setObject(1, grades.getId());
-            statement.setObject(2, grades.getPupil_id());
-            statement.setObject(3, grades.getLesson_id());
+            statement.setObject(2, grades.getPupilId());
+            statement.setObject(3, grades.getLessonId());
             statement.setObject(4, grades.getGrade());
 
             int rowsInserted = statement.executeUpdate();
@@ -167,8 +167,8 @@ public class GradesRepository {
                 if (resultSet.next()) {
                     grades = new Grades();
                     grades.setId(UUID.fromString(resultSet.getString("id")));
-                    grades.setPupil_id(UUID.fromString(resultSet.getString("pupil_id")));
-                    grades.setLesson_id(UUID.fromString(resultSet.getString("lesson_id")));
+                    grades.setPupilId(UUID.fromString(resultSet.getString("pupil_id")));
+                    grades.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
                     grades.setGrade(resultSet.getString("grade"));
                 }
             }

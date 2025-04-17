@@ -35,7 +35,7 @@ public class SchoolClassRepository {
                 preparedStatement.setObject(1, schoolClass.getId());
                 preparedStatement.setObject(2, schoolClass.getLetter());
                 preparedStatement.setObject(3, schoolClass.getNumber());
-                preparedStatement.setObject(4, schoolClass.getTeacher_id());
+                preparedStatement.setObject(4, schoolClass.getTeacherId());
 
                 int rowsInserted = preparedStatement.executeUpdate();
                 if (rowsInserted > 0) {
@@ -84,7 +84,7 @@ public class SchoolClassRepository {
         }
     }
 
-    public Optional<SchoolClass> findClassById(UUID class_id) throws SQLException {
+    public Optional<SchoolClass> findClassById(UUID classId) throws SQLException {
         SchoolClass schoolClass = null;
         Connection connection = null;
 
@@ -95,7 +95,7 @@ public class SchoolClassRepository {
             String query = "SELECT * FROM class WHERE id = ?";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setObject(1, class_id);
+            preparedStatement.setObject(1, classId);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -104,7 +104,7 @@ public class SchoolClassRepository {
                 schoolClass.setId(UUID.fromString(resultSet.getString("id")));
                 schoolClass.setLetter(resultSet.getString("letter"));
                 schoolClass.setNumber(resultSet.getString("number"));
-                schoolClass.setTeacher_id(UUID.fromString(resultSet.getString("teacher_id")));
+                schoolClass.setTeacherId(UUID.fromString(resultSet.getString("teacher_id")));
                 connectionPool.releaseConnection(connection);
             }
 

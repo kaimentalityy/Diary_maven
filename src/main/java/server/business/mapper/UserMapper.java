@@ -1,5 +1,6 @@
 package server.business.mapper;
 
+import org.springframework.stereotype.Component;
 import server.data.entity.User;
 import server.presentation.dto.request.CreateUserRqDto;
 import server.presentation.dto.response.CreateUserRespDto;
@@ -8,6 +9,7 @@ import server.presentation.dto.response.ResponseDto;
 
 import java.util.Optional;
 
+@Component
 public class UserMapper {
 
     public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {
@@ -18,7 +20,7 @@ public class UserMapper {
     }
 
     public CreateUserRespDto toCreateUserRespDto(User user) {
-        return new CreateUserRespDto(user.getId(), user.getLogin(), user.getName(), user.getLastname(), user.getRole_id(), user.isBlocked(), user.getClass_id());
+        return new CreateUserRespDto(user.getId(), user.getLogin(), user.getName(), user.getLastname(), user.getRoleId(), user.isBlocked(), user.getClassId());
     }
 
     public User toUser(CreateUserRqDto createUserRqDto) {
@@ -27,9 +29,8 @@ public class UserMapper {
         user.setPassword(createUserRqDto.password());
         user.setName(createUserRqDto.name());
         user.setLastname(createUserRqDto.lastname());
-        user.setId(createUserRqDto.role());
-        user.setRole_id(createUserRqDto.role());
-        user.setClass_id(createUserRqDto.classId());
+        user.setRoleId(createUserRqDto.role());
+        user.setClassId(createUserRqDto.classId());
         return user;
     }
 

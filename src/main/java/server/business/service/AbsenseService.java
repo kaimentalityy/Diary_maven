@@ -1,5 +1,6 @@
 package server.business.service;
 
+import org.springframework.stereotype.Service;
 import server.data.entity.Absense;
 import server.data.entity.User;
 import server.data.repository.AbsenseRepository;
@@ -8,6 +9,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class AbsenseService {
     private final AbsenseRepository absenseRepository;
 

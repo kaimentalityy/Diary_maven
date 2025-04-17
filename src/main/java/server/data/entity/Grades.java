@@ -8,7 +8,7 @@ import java.util.UUID;
 
 public class Grades {
     private UUID id;
-    private UUID pupil_id;
+    private UUID pupilId;
     private String grade;
-    private UUID lesson_id;
+    private UUID lessonId;
 }

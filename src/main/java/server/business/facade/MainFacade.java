@@ -1,5 +1,7 @@
 package server.business.facade;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
@@ -12,6 +14,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Component
+@RequiredArgsConstructor
 public class MainFacade {
 
     private final UserService userService;
@@ -31,25 +35,6 @@ public class MainFacade {
     private final TeacherMapper teacherMapper;
     private final SchoolClassMapper schoolClassMapper;
     private final WeekScheduleMapper weekScheduleMapper;
-
-    public MainFacade() throws SQLException {
-        userMapper = new UserMapper();
-        userService = new UserService();
-        lessonMapper = new LessonMapper();
-        lessonService = new LessonService();
-        gradesMapper = new GradesMapper();
-        gradesService = new GradesService();
-        subjectMapper = new SubjectMapper();
-        subjectService = new SubjectService();
-        absenseMapper = new AbsenseMapper();
-        absenseService = new AbsenseService();
-        schoolClassMapper = new SchoolClassMapper();
-        schoolClassService = new SchoolClassService();
-        weekScheduleMapper = new WeekScheduleMapper();
-        weekScheduleService = new WeekScheduleService();
-        teacherOfSubjectService = new TeacherOfSubjectService();
-        teacherMapper = new TeacherMapper();
-    }
 
     public ResponseDto<CreateUserRespDto> createUser(CreateUserRqDto createUserRqDto) throws SQLException {
         User user = userMapper.toUser(createUserRqDto);

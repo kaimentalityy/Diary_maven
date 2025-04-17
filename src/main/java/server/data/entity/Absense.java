@@ -9,16 +9,16 @@ import java.util.UUID;
 @Data
 public class Absense {
     private UUID id;
-    private UUID lesson_id;
-    private UUID pupil_id;
-    private boolean is_absent;
+    private UUID lessonId;
+    private UUID pupilId;
+    private boolean isAbsent;
     private Date date;
 
     public boolean is_absent() {
-        return is_absent;
+        return isAbsent;
     }
 
     public void setAbsence(boolean is_absent) {
-        this.is_absent = is_absent;
+        this.isAbsent = is_absent;
     }
 }

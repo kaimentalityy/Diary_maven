@@ -36,13 +36,13 @@ public class WeekScheduleRepository {
             connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, weekSchedule.getId());
-            preparedStatement.setObject(2, weekSchedule.getWeek_day_id());
-            preparedStatement.setObject(3, weekSchedule.getLesson_id());
-            preparedStatement.setObject(4, weekSchedule.getLesson_number());
+            preparedStatement.setObject(2, weekSchedule.getWeekDayId());
+            preparedStatement.setObject(3, weekSchedule.getLessonId());
+            preparedStatement.setObject(4, weekSchedule.getLessonNumber());
 
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected > 0) {
-                    System.out.println("Lesson " + weekSchedule.getLesson_id() + " has been scheduled to " + weekSchedule.getWeek_day_id());
+                    System.out.println("Lesson " + weekSchedule.getLessonId() + " has been scheduled to " + weekSchedule.getWeekDayId());
                 } else {
                     System.out.println("Error inserting day in schedule");
                 }
@@ -64,10 +64,10 @@ public class WeekScheduleRepository {
 
             preparedStatement.setObject(1, weekSchedule.getId());
 
-            if (weekSchedule.getLesson_number() != null) {
+            if (weekSchedule.getLessonNumber() != null) {
                 int rowsAffected = preparedStatement.executeUpdate();
                 if (rowsAffected > 0) {
-                    System.out.println("Lesson " + weekSchedule.getLesson_id() + " has been unscheduled");
+                    System.out.println("Lesson " + weekSchedule.getLessonId() + " has been unscheduled");
                 } else {
                     System.out.println("Error unscheduling lesson");
                 }
@@ -126,9 +126,9 @@ public class WeekScheduleRepository {
             if (resultSet.next()) {
                 weekSchedule = new WeekSchedule();
                 weekSchedule.setId(UUID.fromString(resultSet.getString("id")));
-                weekSchedule.setLesson_number(resultSet.getInt("lesson_number"));
-                weekSchedule.setWeek_day_id(Integer.valueOf(resultSet.getString("day_of_week_id")));
-                weekSchedule.setLesson_id(UUID.fromString(resultSet.getString("lesson_id")));
+                weekSchedule.setLessonNumber(resultSet.getInt("lesson_number"));
+                weekSchedule.setWeekDayId(Integer.valueOf(resultSet.getString("day_of_week_id")));
+                weekSchedule.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
             }
 
             return Optional.ofNullable(weekSchedule);
@@ -180,10 +180,10 @@ public class WeekScheduleRepository {
             while (resultSet.next()) {
                 Lesson lesson = new Lesson();
                 lesson.setId(UUID.fromString(resultSet.getString("id")));
-                lesson.setTeacher_of_subject_id(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
-                lesson.setClass_id(lesson1.getClass_id());
+                lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
+                lesson.setClassId(lesson1.getClassId());
                 lesson.setDate(LocalDateTime.parse(resultSet.getString("date")));
-                lesson.setSubject_id(UUID.fromString(resultSet.getString("subject_id")));
+                lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
                 lessons.add(lesson);
             }
             return lessons;

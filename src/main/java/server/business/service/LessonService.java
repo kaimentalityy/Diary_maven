@@ -1,5 +1,6 @@
 package server.business.service;
 
+import org.springframework.stereotype.Service;
 import server.data.entity.Lesson;
 import server.data.repository.LessonRepository;
 
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class LessonService {
 
     private final LessonRepository lessonRepository;

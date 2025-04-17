@@ -35,10 +35,10 @@ public class LessonRepository {
 
             if (lesson.getId() != null) {
                 statement.setObject(1, lesson.getId());
-                statement.setObject(2, lesson.getClass_id());
-                statement.setObject(3, lesson.getTeacher_of_subject_id());
+                statement.setObject(2, lesson.getClassId());
+                statement.setObject(3, lesson.getTeacherOfSubjectId());
                 statement.setObject(4, lesson.getDate());
-                statement.setObject(5, lesson.getSubject_id());
+                statement.setObject(5, lesson.getSubjectId());
 
                 int rowsInserted = statement.executeUpdate();
                 if (rowsInserted > 0) {
@@ -69,10 +69,10 @@ public class LessonRepository {
                 if (resultSet.next()) {
                     lesson = new Lesson();
                     lesson.setId(UUID.fromString(resultSet.getString("id")));
-                    lesson.setClass_id(UUID.fromString(resultSet.getString("class_id")));
-                    lesson.setTeacher_of_subject_id(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
+                    lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
+                    lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
                     lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
-                    lesson.setSubject_id(UUID.fromString(resultSet.getString("subject_id")));
+                    lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
                 } else {
                     System.out.println("No lesson found for ID: " + id);
                     return Optional.empty();
@@ -86,7 +86,7 @@ public class LessonRepository {
         }
     }
 
-    public Optional<Lesson> findByClassId(UUID class_id) throws SQLException {
+    public Optional<Lesson> findByClassId(UUID classId) throws SQLException {
         String query = "SELECT * FROM lesson WHERE class_id = ?";
         Lesson lesson;
         Connection connection = null;
@@ -95,22 +95,22 @@ public class LessonRepository {
             connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-            if (class_id == null) {
+            if (classId == null) {
                 throw new IllegalArgumentException("Class_id cannot be null");
             }
 
-            preparedStatement.setObject(1, class_id);
+            preparedStatement.setObject(1, classId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
                     lesson = new Lesson();
                     lesson.setId(UUID.fromString(resultSet.getString("id")));
-                    lesson.setClass_id(UUID.fromString(resultSet.getString("class_id")));
-                    lesson.setTeacher_of_subject_id(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
+                    lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
+                    lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
                     lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
-                    lesson.setSubject_id(UUID.fromString(resultSet.getString("subject_id")));
+                    lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
                 } else {
-                    System.out.println("No lesson found for ID: " + class_id);
+                    System.out.println("No lesson found for ID: " + classId);
                     return Optional.empty();
                 }
             }
@@ -123,7 +123,7 @@ public class LessonRepository {
 
     }
 
-    public List<Lesson> findBySubjectId(UUID subject_id) throws SQLException {
+    public List<Lesson> findBySubjectId(UUID subjectId) throws SQLException {
         String query = "SELECT * FROM lesson WHERE subject_id = ?";
         List<Lesson> lessons = new ArrayList<>();
 
@@ -133,20 +133,20 @@ public class LessonRepository {
             connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
-            if (subject_id == null) {
+            if (subjectId == null) {
                 throw new IllegalArgumentException("SubjectId cannot be null");
             }
 
-            preparedStatement.setObject(1, subject_id);
+            preparedStatement.setObject(1, subjectId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     Lesson lesson = new Lesson();
                     lesson.setId(UUID.fromString(resultSet.getString("id")));
-                    lesson.setClass_id(UUID.fromString(resultSet.getString("class_id")));
-                    lesson.setTeacher_of_subject_id(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
+                    lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
+                    lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
                     lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
-                    lesson.setSubject_id(UUID.fromString(resultSet.getString("subject_id")));
+                    lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
                     lessons.add(lesson);
                 }
             }

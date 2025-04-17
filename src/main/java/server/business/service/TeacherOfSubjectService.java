@@ -1,5 +1,6 @@
 package server.business.service;
 
+import org.springframework.stereotype.Service;
 import server.data.entity.TeacherOfSubject;
 import server.data.repository.TeacherOfSubjectRepository;
 
@@ -7,6 +8,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class TeacherOfSubjectService {
 
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;

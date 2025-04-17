@@ -1,5 +1,6 @@
 package server.business.mapper;
 
+import org.springframework.stereotype.Component;
 import server.data.entity.Lesson;
 import server.presentation.dto.request.LessonRqDto;
 import server.presentation.dto.response.LessonRespDto;
@@ -8,6 +9,7 @@ import server.presentation.dto.response.ResponseDto;
 
 import java.util.Optional;
 
+@Component
 public class LessonMapper {
 
     public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {
@@ -18,15 +20,15 @@ public class LessonMapper {
     }
 
     public LessonRespDto toLessonRespDto(Lesson lesson) {
-        return new LessonRespDto(lesson.getId(), lesson.getClass_id(), lesson.getTeacher_of_subject_id(), lesson.getDate(), lesson.getSubject_id());
+        return new LessonRespDto(lesson.getId(), lesson.getClassId(), lesson.getTeacherOfSubjectId(), lesson.getDate(), lesson.getSubjectId());
     }
 
     public Lesson toLesson(LessonRqDto lessonRqDto) {
         Lesson lesson = new Lesson();
-        lesson.setClass_id(lessonRqDto.class_id());
-        lesson.setTeacher_of_subject_id(lessonRqDto.teacher_of_subject_id());
+        lesson.setClassId(lessonRqDto.class_id());
+        lesson.setTeacherOfSubjectId(lessonRqDto.teacher_of_subject_id());
         lesson.setDate(lessonRqDto.date());
-        lesson.setSubject_id(lessonRqDto.subject_id());
+        lesson.setSubjectId(lessonRqDto.subject_id());
         return lesson;
     }
 }

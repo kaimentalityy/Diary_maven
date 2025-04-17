@@ -88,14 +88,14 @@ public class UserRepository {
                 user.setPassword(resultSet.getString("password"));
                 user.setName(resultSet.getString("name"));
                 user.setLastname(resultSet.getString("lastname"));
-                user.setRole_id(UUID.fromString(resultSet.getString("role_id")));
+                user.setRoleId(UUID.fromString(resultSet.getString("role_id")));
                 user.setBlocked(resultSet.getBoolean("is_blocked"));
 
                 String classIdStr = resultSet.getString("class_id");
                 if (classIdStr != null && !resultSet.wasNull()) {
-                    user.setClass_id(UUID.fromString(classIdStr));
+                    user.setClassId(UUID.fromString(classIdStr));
                 } else {
-                    user.setClass_id(null);
+                    user.setClassId(null);
                 }
             }
 
@@ -127,14 +127,14 @@ public class UserRepository {
                 user.setPassword(resultSet.getString("password"));
                 user.setName(resultSet.getString("name"));
                 user.setLastname(resultSet.getString("lastname"));
-                user.setRole_id(UUID.fromString(resultSet.getString("role_id")));
+                user.setRoleId(UUID.fromString(resultSet.getString("role_id")));
                 user.setBlocked(resultSet.getBoolean("is_blocked"));
 
                 String classIdStr = resultSet.getString("class_id");
                 if (classIdStr != null && !resultSet.wasNull()) {
-                    user.setClass_id(UUID.fromString(classIdStr));
+                    user.setClassId(UUID.fromString(classIdStr));
                 } else {
-                    user.setClass_id(null);
+                    user.setClassId(null);
                 }
             }
 
@@ -146,7 +146,7 @@ public class UserRepository {
         }
     }
 
-    public Optional<User> findPupilByClassId(UUID class_id) throws SQLException {
+    public Optional<User> findPupilByClassId(UUID classId) throws SQLException {
         User user = null;
         Connection connection = null;
 
@@ -155,7 +155,7 @@ public class UserRepository {
             String query = "SELECT * FROM users WHERE class_id = ?";
 
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-            preparedStatement.setObject(1, class_id);
+            preparedStatement.setObject(1, classId);
 
             ResultSet resultSet = preparedStatement.executeQuery();
 
@@ -166,9 +166,9 @@ public class UserRepository {
                 user.setPassword(resultSet.getString("password"));
                 user.setName(resultSet.getString("name"));
                 user.setLastname(resultSet.getString("lastname"));
-                user.setRole_id(UUID.fromString(resultSet.getString("role_id")));
+                user.setRoleId(UUID.fromString(resultSet.getString("role_id")));
                 user.setBlocked(resultSet.getBoolean("is_blocked"));
-                user.setClass_id(UUID.fromString(resultSet.getString("class_id")));
+                user.setClassId(UUID.fromString(resultSet.getString("class_id")));
             }
 
             return Optional.ofNullable(user);
@@ -218,9 +218,9 @@ public class UserRepository {
             preparedStatement.setString(3, user.getLastname());
             preparedStatement.setString(4, user.getLogin());
             preparedStatement.setString(5, user.getPassword());
-            preparedStatement.setObject(6, user.getRole_id());
+            preparedStatement.setObject(6, user.getRoleId());
             preparedStatement.setBoolean(7, user.isBlocked());
-            preparedStatement.setObject(8, user.getClass_id());
+            preparedStatement.setObject(8, user.getClassId());
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted > 0) {
@@ -257,9 +257,9 @@ public class UserRepository {
                     user.setPassword(findPupilByClassId(schoolClass.getId()).get().getPassword());
                     user.setName(findPupilByClassId(schoolClass.getId()).get().getName());
                     user.setLastname(findPupilByClassId(schoolClass.getId()).get().getLastname());
-                    user.setRole_id(findPupilByClassId(schoolClass.getId()).get().getRole_id());
+                    user.setRoleId(findPupilByClassId(schoolClass.getId()).get().getRoleId());
                     user.setBlocked(findPupilByClassId(schoolClass.getId()).get().isBlocked());
-                    user.setClass_id(findPupilByClassId(schoolClass.getId()).get().getClass_id());
+                    user.setClassId(findPupilByClassId(schoolClass.getId()).get().getClassId());
                     pupils.add(user);
                 }
             }

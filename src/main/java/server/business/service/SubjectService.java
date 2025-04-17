@@ -1,5 +1,6 @@
 package server.business.service;
 
+import org.springframework.stereotype.Service;
 import server.data.entity.Subject;
 import server.data.repository.SubjectRepository;
 
@@ -8,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;

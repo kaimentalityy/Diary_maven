@@ -29,9 +29,9 @@ public class AbsenseRepository {
             connection = connectionPool.connectToDataBase();
             PreparedStatement statement = connection.prepareStatement(query);
 
-            statement.setObject(1, absense.getLesson_id());
+            statement.setObject(1, absense.getLessonId());
             statement.setObject(2, absense.getId());
-            statement.setObject(3, absense.getPupil_id());
+            statement.setObject(3, absense.getPupilId());
             statement.setBoolean(4, true);
             statement.setObject(5, absense.getDate());
 
@@ -119,8 +119,8 @@ public class AbsenseRepository {
                 if (resultSet.next()) {
                     absense = new Absense();
                     absense.setId(UUID.fromString(resultSet.getString("id")));
-                    absense.setLesson_id(UUID.fromString(resultSet.getString("lesson_id")));
-                    absense.setPupil_id(UUID.fromString(resultSet.getString("pupil_id")));
+                    absense.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
+                    absense.setPupilId(UUID.fromString(resultSet.getString("pupil_id")));
                     absense.setAbsence(resultSet.getBoolean("is_absent"));
                 } else {
                     System.out.println("No attendance found with id: " + id);

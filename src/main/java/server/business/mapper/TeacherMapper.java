@@ -1,5 +1,6 @@
 package server.business.mapper;
 
+import org.springframework.stereotype.Component;
 import server.data.entity.TeacherOfSubject;
 import server.presentation.dto.request.TeacherRqDto;
 import server.presentation.dto.response.ErrorDto;
@@ -8,6 +9,7 @@ import server.presentation.dto.response.TeacherRespDto;
 
 import java.util.Optional;
 
+@Component
 public class TeacherMapper {
 
     public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {

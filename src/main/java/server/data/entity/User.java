@@ -13,7 +13,7 @@ public class User {
     private String lastname;
     private String login;
     private String password;
-    private UUID role_id;
+    private UUID roleId;
     private boolean isBlocked;
-    private UUID class_id;
+    private UUID classId;
 }

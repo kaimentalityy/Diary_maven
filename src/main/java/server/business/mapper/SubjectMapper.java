@@ -1,5 +1,6 @@
 package server.business.mapper;
 
+import org.springframework.stereotype.Component;
 import server.data.entity.Subject;
 import server.presentation.dto.request.SubjectRqDto;
 import server.presentation.dto.response.ErrorDto;
@@ -8,6 +9,7 @@ import server.presentation.dto.response.SubjectRespDto;
 
 import java.util.Optional;
 
+@Component
 public class SubjectMapper {
 
     public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {

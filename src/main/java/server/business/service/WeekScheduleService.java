@@ -1,5 +1,6 @@
 package server.business.service;
 
+import org.springframework.stereotype.Service;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Service
 public class WeekScheduleService {
 
     private final WeekScheduleRepository weekScheduleRepository;
