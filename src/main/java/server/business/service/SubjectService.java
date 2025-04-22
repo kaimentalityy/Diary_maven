@@ -1,5 +1,6 @@
 package server.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.Subject;
 import server.data.repository.SubjectRepository;
@@ -10,13 +11,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class SubjectService {
 
     private final SubjectRepository subjectRepository;
-
-    public SubjectService() throws SQLException {
-        subjectRepository = new SubjectRepository();
-    }
 
     public Subject createSubject(Subject subject) throws SQLException {
         subject.setId(UUID.randomUUID());

@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.TeacherOfSubject;
 import server.presentation.dto.request.TeacherRqDto;
@@ -13,13 +15,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class TeacherController {
 
     private final MainFacade facade;
-
-    public TeacherController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<TeacherRespDto> addTeacher(TeacherRqDto teacherRqDto) throws SQLException, ConstraintViolationException {
 

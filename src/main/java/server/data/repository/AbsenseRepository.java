@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.Absense;
 import server.data.entity.User;
@@ -8,6 +9,7 @@ import java.sql.*;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class AbsenseRepository {
 
     private final ConnectionPool connectionPool;

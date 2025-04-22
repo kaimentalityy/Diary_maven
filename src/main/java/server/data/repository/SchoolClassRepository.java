@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.SchoolClass;
 
@@ -10,6 +11,7 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class SchoolClassRepository {
 
     private final ConnectionPool connectionPool;

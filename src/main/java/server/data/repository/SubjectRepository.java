@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.Subject;
 
@@ -12,6 +13,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class SubjectRepository {
 
     private final ConnectionPool connectionPool;

@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.Lesson;
 import server.presentation.dto.request.LessonRqDto;
@@ -15,12 +17,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class LessonController {
     private final MainFacade facade;
-
-    public LessonController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<LessonRespDto> createLesson(LessonRqDto lessonRqDto) throws SQLException, ConstraintViolationException {
 

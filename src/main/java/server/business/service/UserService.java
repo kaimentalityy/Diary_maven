@@ -1,5 +1,6 @@
 package server.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
@@ -11,12 +12,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
-
-    public UserService() throws SQLException {
-        this.userRepository = new UserRepository();
-    }
 
     public Optional<User> findUserByLogin(String login) throws SQLException {
         return userRepository.findUserByLogin(login);

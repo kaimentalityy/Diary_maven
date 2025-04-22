@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.User;
 import server.presentation.dto.request.CreateUserRqDto;
@@ -13,13 +15,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class UserController {
 
     private final MainFacade mainFacade;
-
-    public UserController() throws SQLException {
-        mainFacade = new MainFacade();
-    }
 
     public ResponseDto<CreateUserRespDto> createAccount(CreateUserRqDto createUserRqDto) throws ConstraintViolationException, SQLException {
         Validator.notNull(createUserRqDto.login());

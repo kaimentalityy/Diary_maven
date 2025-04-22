@@ -1,6 +1,8 @@
 package server.presentation.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.Absense;
 import server.data.entity.User;
@@ -15,13 +17,11 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class AbsenseController {
 
     private final MainFacade facade;
-
-    public AbsenseController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<AbsenseRespDto> insertAbsence(AbsenseRqDto absenseRqDto) throws SQLException, ConstraintViolationException {
 

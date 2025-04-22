@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.Grades;
 import server.data.entity.User;
@@ -15,13 +17,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class GradesController {
 
     private final MainFacade facade;
-
-    public GradesController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<GradeRespDto> giveGrade(GradeRqDto gradeRqDto) throws SQLException, ConstraintViolationException {
 

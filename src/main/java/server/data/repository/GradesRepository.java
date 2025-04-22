@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.Grades;
 import server.data.entity.Lesson;
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 
+@Repository
 public class GradesRepository {
 
     private final ConnectionPool connectionPool;

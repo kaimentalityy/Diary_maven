@@ -1,5 +1,6 @@
 package server.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.TeacherOfSubject;
 import server.data.repository.TeacherOfSubjectRepository;
@@ -9,13 +10,10 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class TeacherOfSubjectService {
 
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;
-
-    public TeacherOfSubjectService() throws SQLException {
-        teacherOfSubjectRepository = new TeacherOfSubjectRepository();
-    }
 
     public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) throws SQLException {
         teacherOfSubject.setId(UUID.randomUUID());

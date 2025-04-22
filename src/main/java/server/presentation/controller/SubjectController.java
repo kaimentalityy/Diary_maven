@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.Subject;
 import server.presentation.dto.request.SubjectRqDto;
@@ -14,13 +16,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class SubjectController {
 
     private final MainFacade facade;
-
-    public SubjectController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<SubjectRespDto> addSubject(SubjectRqDto subjectRqDto) throws SQLException, ConstraintViolationException {
 

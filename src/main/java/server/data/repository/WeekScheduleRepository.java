@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
@@ -15,6 +16,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Repository
 public class WeekScheduleRepository {
 
     private final ConnectionPool connectionPool;

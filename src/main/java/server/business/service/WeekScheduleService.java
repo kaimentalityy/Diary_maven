@@ -1,5 +1,6 @@
 package server.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
@@ -12,15 +13,11 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class WeekScheduleService {
 
     private final WeekScheduleRepository weekScheduleRepository;
     private final LessonService lessonService;
-
-    public WeekScheduleService() throws SQLException {
-        weekScheduleRepository = new WeekScheduleRepository();
-        lessonService = new LessonService();
-    }
 
     public WeekSchedule insert(WeekSchedule weekSchedule) throws SQLException {
         weekSchedule.setId(UUID.randomUUID());

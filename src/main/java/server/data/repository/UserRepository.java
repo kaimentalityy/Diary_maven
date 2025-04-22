@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
@@ -7,6 +8,7 @@ import server.data.entity.User;
 import java.sql.*;
 import java.util.*;
 
+@Repository
 public class UserRepository {
 
     ConnectionPool connectionPool;

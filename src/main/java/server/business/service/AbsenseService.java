@@ -1,5 +1,6 @@
 package server.business.service;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.Absense;
 import server.data.entity.User;
@@ -10,12 +11,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor
 public class AbsenseService {
     private final AbsenseRepository absenseRepository;
-
-    public AbsenseService() throws SQLException {
-        absenseRepository = new AbsenseRepository();
-    }
 
     public Absense insertAbsence(Absense absense) throws SQLException {
         absense.setId(UUID.randomUUID());

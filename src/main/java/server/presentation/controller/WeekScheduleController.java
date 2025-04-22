@@ -1,5 +1,7 @@
 package server.presentation.controller;
 
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
 import server.business.facade.MainFacade;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
@@ -15,13 +17,11 @@ import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
+@Controller
+@RequiredArgsConstructor
 public class WeekScheduleController {
 
     private final MainFacade facade;
-
-    public WeekScheduleController() throws SQLException {
-        facade = new MainFacade();
-    }
 
     public ResponseDto<WeekScheduleRespDto> addWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) throws SQLException, ConstraintViolationException {
 
