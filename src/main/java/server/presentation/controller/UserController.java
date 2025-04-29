@@ -32,15 +32,18 @@ public class UserController {
 
     @DeleteMapping("/{login}")
     public ResponseDto<Void> deleteUser(@PathVariable String login) throws SQLException, ConstraintViolationException {
+        Validator.notNull(login);
 
-        ResponseDto<User> user = facade.findUserByLogin(login);
+        ResponseDto<User> userDto = facade.findUserByLogin(login);
+        Optional<User> userOpt = userDto.getResult();
 
-        if (findUserByLogin(user.getResult().orElse(null).getLogin()).getResult().isPresent()) {
-            Validator.notNull(user);
-            return facade.deleteUser(user.getResult().orElse(null));
+        if (userOpt.isPresent()) {
+            return facade.deleteUser(userOpt.get());
         }
+
         return new ResponseDto<>(Optional.empty(), new ErrorDto("User not found"));
     }
+
 
     @GetMapping("/{id}")
     public ResponseDto<User> findUserById(@PathVariable UUID id) throws SQLException {
