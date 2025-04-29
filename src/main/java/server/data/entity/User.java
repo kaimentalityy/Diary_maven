@@ -16,4 +16,5 @@ public class User {
     private UUID roleId;
     private boolean isBlocked;
     private UUID classId;
+
 }

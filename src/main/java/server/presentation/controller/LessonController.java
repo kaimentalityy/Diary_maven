@@ -2,6 +2,7 @@ package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Lesson;
 import server.presentation.dto.request.LessonRqDto;
@@ -17,31 +18,39 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/lessons")
 public class LessonController {
     private final MainFacade facade;
 
-    public ResponseDto<LessonRespDto> createLesson(LessonRqDto lessonRqDto) throws SQLException, ConstraintViolationException {
+    @PostMapping
+    public ResponseDto<LessonRespDto> createLesson(@RequestBody LessonRqDto lessonRqDto) throws SQLException, ConstraintViolationException {
 
         Validator.notNull(lessonRqDto);
 
         return facade.assignLesson(lessonRqDto);
     }
 
-    public ResponseDto<Void> deleteLesson(Lesson lesson) throws SQLException, ConstraintViolationException {
-        if (findLessonById(lesson.getId()).getResult().isPresent()) {
+    @DeleteMapping("/{id}")
+    public ResponseDto<Void> deleteLesson(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+
+        ResponseDto<Lesson> lesson = facade.findLessonById(id);
+
+        if (findLessonById(lesson.getResult().orElse(null).getId()).getResult().isPresent()) {
             Validator.notNull(lesson);
-            return facade.removeLesson(lesson);
+            return facade.removeLesson(lesson.getResult().orElse(null));
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Lesson not found"));
     }
 
-    public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) throws SQLException {
+    @GetMapping("/{localDateTime}")
+    public List<Lesson> findAllLessonsByDate(@PathVariable LocalDateTime localDateTime) throws SQLException {
         return facade.findAllLessonsByDate(localDateTime);
     }
 
-    public ResponseDto<Lesson> findLessonById(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<Lesson> findLessonById(@PathVariable UUID id) throws SQLException {
         return facade.findLessonById(id);
     }
 }

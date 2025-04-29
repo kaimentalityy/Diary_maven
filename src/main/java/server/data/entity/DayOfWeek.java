@@ -3,6 +3,8 @@ package server.data.entity;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
+import java.util.Optional;
+
 @Getter
 @AllArgsConstructor
 public enum DayOfWeek {
@@ -15,4 +17,14 @@ public enum DayOfWeek {
     SUNDAY(7);
 
     private final int value;
+
+    public static Optional<DayOfWeek> getByValue(int value) {
+        for (DayOfWeek day : DayOfWeek.values()) {
+            if (day.getValue() == value) {
+                return Optional.of(day);
+            }
+        }
+        return Optional.empty();
+    }
 }
+

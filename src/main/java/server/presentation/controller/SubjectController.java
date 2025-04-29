@@ -1,7 +1,7 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Subject;
 import server.presentation.dto.request.SubjectRqDto;
@@ -16,35 +16,44 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/subjects")
 public class SubjectController {
 
     private final MainFacade facade;
 
-    public ResponseDto<SubjectRespDto> addSubject(SubjectRqDto subjectRqDto) throws SQLException, ConstraintViolationException {
+    @PostMapping
+    public ResponseDto<SubjectRespDto> addSubject(@RequestBody SubjectRqDto subjectRqDto) throws SQLException, ConstraintViolationException {
 
         Validator.notNull(subjectRqDto);
         return facade.createSubject(subjectRqDto);
     }
 
-    public ResponseDto<Void> deleteSubject(Subject subject) throws SQLException, ConstraintViolationException {
-        if (findSubjectById(subject.getId()).getResult().isPresent()) {
+    @DeleteMapping("/{id}")
+    public ResponseDto<Void> deleteSubject(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+
+        ResponseDto<Subject> subject = facade.findSubjectById(id);
+
+        if (findSubjectById(subject.getResult().orElse(null).getId()).getResult().isPresent()) {
             Validator.notNull(subject);
-            return facade.deleteSubject(subject);
+            return facade.deleteSubject(subject.getResult().orElse(null));
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Subject not found"));
     }
 
-    public ResponseDto<Subject> findSubjectById(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<Subject> findSubjectById(@PathVariable UUID id) throws SQLException {
         return facade.findSubjectById(id);
     }
 
+    @GetMapping
     public List<Subject> findAllSubjects() throws SQLException {
         return facade.findAllSubjects();
     }
 
-    public ResponseDto<Subject> findSubjectByName(String name) throws SQLException {
+    @GetMapping("/{name}")
+    public ResponseDto<Subject> findSubjectByName(@PathVariable String name) throws SQLException {
         return facade.findSubjectByName(name);
     }
 }

@@ -12,4 +12,5 @@ public class WeekSchedule {
     private UUID id;
     private Integer weekDayId;
     private Integer lessonNumber;
+
 }

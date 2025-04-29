@@ -28,6 +28,13 @@ public class ConnectionPool {
         this.username = username;
         this.password = password;
         this.MAX_POOL_SIZE = MAX_POOL_SIZE;
+
+        try {
+            Class.forName("org.postgresql.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("PostgreSQL JDBC driver not found", e);
+        }
+
         for (int i = 0; i < MAX_POOL_SIZE; i++) {
             availableConnections.add(DriverManager.getConnection(jdbcUrl, username, password));
         }

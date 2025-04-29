@@ -1,7 +1,7 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Grades;
 import server.data.entity.User;
@@ -17,28 +17,30 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/grades")
 public class GradesController {
 
     private final MainFacade facade;
 
-    public ResponseDto<GradeRespDto> giveGrade(GradeRqDto gradeRqDto) throws SQLException, ConstraintViolationException {
-
+    @PostMapping
+    public ResponseDto<GradeRespDto> giveGrade(@RequestBody GradeRqDto gradeRqDto) throws SQLException, ConstraintViolationException {
         Validator.notNull(gradeRqDto);
-
         return facade.giveGrade(gradeRqDto);
     }
 
-    public ResponseDto<Void> removeGrade(Grades grades) throws SQLException, ConstraintViolationException {
-        if (findGradeById(grades.getId()).getResult().isPresent()) {
-            Validator.notNull(grades);
-            return facade.removeGrade(grades);
+    @DeleteMapping("/{id}")
+    public ResponseDto<Void> removeGrade(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+        if (findGradeById(id).getResult().isPresent()) {
+            Validator.notNull(id);
+            return facade.removeGrade(findGradeById(id).getResult().get());
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Grades not found"));
     }
 
-    public ResponseDto<Void> updateGrade(UUID id) throws SQLException, ConstraintViolationException {
+    @PatchMapping("/{id}")
+    public ResponseDto<Void> updateGrade(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
         if (findGradeById(id).getResult().isPresent()) {
             Validator.notNull(id);
             return facade.updateGrade(id);
@@ -46,16 +48,23 @@ public class GradesController {
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Grades not found"));
     }
 
-    public ResponseDto<Grades> findGradeById(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<Grades> findGradeById(@PathVariable UUID id) throws SQLException {
         return facade.findGradeById(id);
     }
 
-    public List<String> findAllGradesOfPupil(User user, UUID subjectId) throws SQLException {
+    @GetMapping("/pupil-grades")
+    public List<String> findAllGradesOfPupil(@RequestParam UUID userId, @RequestParam UUID subjectId) throws SQLException {
+        User user = new User();
+        user.setId(userId);
         return facade.findAllGradesOfPupil(user, subjectId);
     }
 
-    public ResponseDto<Double> calculateAverageGrade(User user, UUID subjectId) throws SQLException {
+    @GetMapping("/average-grade")
+    public ResponseDto<Double> calculateAverageGrade(@RequestParam UUID userId, @RequestParam UUID subjectId) throws SQLException {
+        User user = new User();
+        user.setId(userId);
         return facade.calculateAverageGrade(user, subjectId);
     }
-
 }
+

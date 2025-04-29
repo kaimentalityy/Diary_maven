@@ -11,7 +11,7 @@ public class Absense {
     private UUID id;
     private UUID lessonId;
     private UUID pupilId;
-    private boolean isAbsent;
+    private Boolean isAbsent;
     private Date date;
 
     public boolean is_absent() {
@@ -21,4 +21,5 @@ public class Absense {
     public void setAbsence(boolean is_absent) {
         this.isAbsent = is_absent;
     }
+
 }

@@ -1,7 +1,7 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.TeacherOfSubject;
 import server.presentation.dto.request.TeacherRqDto;
@@ -15,38 +15,47 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/teachers")
 public class TeacherController {
 
     private final MainFacade facade;
 
-    public ResponseDto<TeacherRespDto> addTeacher(TeacherRqDto teacherRqDto) throws SQLException, ConstraintViolationException {
+    @PostMapping
+    public ResponseDto<TeacherRespDto> addTeacher(@RequestBody TeacherRqDto teacherRqDto) throws SQLException, ConstraintViolationException {
 
         Validator.notNull(teacherRqDto);
 
         return facade.addTeacher(teacherRqDto);
     }
 
-    public ResponseDto<Void> deleteTeacher(TeacherOfSubject teacherOfSubject) throws SQLException, ConstraintViolationException {
-        if (getTeacherById(teacherOfSubject.getId()).getResult().isPresent()) {
+    @DeleteMapping("/{id}")
+    public ResponseDto<Void> deleteTeacher(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+
+        ResponseDto<TeacherOfSubject> teacherOfSubject = facade.findTeacherById(id);
+
+        if (getTeacherById(teacherOfSubject.getResult().orElse(null).getId()).getResult().isPresent()) {
             Validator.notNull(teacherOfSubject);
-            return facade.deleteTeacher(teacherOfSubject);
+            return facade.deleteTeacher(teacherOfSubject.getResult().get());
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Teacher not found"));
     }
 
-    public ResponseDto<Void> updateTeacher(TeacherOfSubject teacherOfSubject) throws SQLException, ConstraintViolationException {
-        if (getTeacherById(teacherOfSubject.getId()).getResult().isPresent()) {
+    @PatchMapping("/{id}")
+    public ResponseDto<Void> updateTeacher(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+
+        ResponseDto<TeacherOfSubject> teacherOfSubject = facade.findTeacherById(id);
+
+        if (getTeacherById(teacherOfSubject.getResult().orElse(null).getId()).getResult().isPresent()) {
             Validator.notNull(teacherOfSubject);
-            return facade.updateTeacher(teacherOfSubject.getId());
+            return facade.updateTeacher(teacherOfSubject.getResult().orElse(null).getId());
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Teacher not found"));
     }
 
-    public ResponseDto<TeacherOfSubject> getTeacherById(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<TeacherOfSubject> getTeacherById(@PathVariable UUID id) throws SQLException {
         return facade.findTeacherById(id);
     }
-
-
 }

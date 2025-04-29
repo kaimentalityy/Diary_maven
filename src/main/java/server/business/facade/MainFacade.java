@@ -204,7 +204,7 @@ public class MainFacade {
         Optional<Double> totalHours = calculateTotalHours(classId).getResult();
         Optional<Double> attendance = calculateAttendance(user).getResult();
 
-        if (totalHours.orElse(null) == 0 || totalHours.isEmpty()) {
+        if (totalHours.isEmpty() && attendance.isPresent()) {
             return new ResponseDto<>(Optional.empty(), new ErrorDto("No hours recorded for class: " + classId));
         }
 
@@ -217,6 +217,11 @@ public class MainFacade {
     public ResponseDto<User> findUserByLogin(String login) throws SQLException {
         return new ResponseDto<>(userService.findUserByLogin(login),
                 new ErrorDto("User not found with login: " + login));
+    }
+    
+    public ResponseDto<DayOfWeek> findDayOfWeekById(int value) {
+        return new ResponseDto<>(DayOfWeek.getByValue(value),
+                new ErrorDto("No day with this value found"));
     }
 
     public ResponseDto<Void> updateUser(String login) throws SQLException {

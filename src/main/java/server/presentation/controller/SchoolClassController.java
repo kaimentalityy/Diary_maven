@@ -1,7 +1,7 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
@@ -17,32 +17,44 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/schoolClasses")
 public class SchoolClassController {
 
     private final MainFacade facade;
 
-    public ResponseDto<SchoolClassRespDto> createSchoolClass(SchoolClassRqDto schoolClassRqDto) throws SQLException, ConstraintViolationException {
-
+    @PostMapping
+    public ResponseDto<SchoolClassRespDto> createSchoolClass(@RequestBody SchoolClassRqDto schoolClassRqDto) throws SQLException, ConstraintViolationException {
         Validator.notNull(schoolClassRqDto);
-
         return facade.createSchoolClass(schoolClassRqDto);
     }
 
-    public ResponseDto<Void> deleteSchoolClass(SchoolClass schoolClass) throws SQLException, ConstraintViolationException {
-        if (findSchoolClassById(schoolClass.getId()).getResult().isPresent()) {
-            Validator.notNull(schoolClass);
+    @DeleteMapping("/{id}")
+    public ResponseDto<Void> deleteSchoolClass(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
+        ResponseDto<SchoolClass> schoolClassResponse = facade.findSchoolClassById(id);
+
+        if (schoolClassResponse.getResult().isPresent()) {
+            SchoolClass schoolClass = schoolClassResponse.getResult().get();
             return facade.deleteSchoolClass(schoolClass);
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("School class not found"));
     }
 
-    public ResponseDto<SchoolClass> findSchoolClassById(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<SchoolClass> findSchoolClassById(@PathVariable UUID id) throws SQLException {
         return facade.findSchoolClassById(id);
     }
 
-    public List<User> findAllPupilsOfClass(SchoolClass schoolClass) throws SQLException {
-        return facade.findAllPupilsOfClass(schoolClass);
+    @GetMapping("/{id}/pupils")
+    public ResponseDto<List<User>> findAllPupilsOfClass(@PathVariable UUID id) throws SQLException {
+        ResponseDto<SchoolClass> schoolClassResponse = facade.findSchoolClassById(id);
+
+        if (schoolClassResponse.getResult().isPresent()) {
+            SchoolClass schoolClass = schoolClassResponse.getResult().get();
+            List<User> pupils = facade.findAllPupilsOfClass(schoolClass);
+            return new ResponseDto<>(Optional.of(pupils), null);
+        }
+        return new ResponseDto<>(Optional.empty(), new ErrorDto("School class not found"));
     }
 }

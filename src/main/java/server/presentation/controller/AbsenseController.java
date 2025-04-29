@@ -1,8 +1,7 @@
 package server.presentation.controller;
 
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Absense;
 import server.data.entity.User;
@@ -17,36 +16,45 @@ import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
-@Controller
+@RestController
 @RequiredArgsConstructor
+@RequestMapping("/api/absences")
 public class AbsenseController {
 
     private final MainFacade facade;
 
-    public ResponseDto<AbsenseRespDto> insertAbsence(AbsenseRqDto absenseRqDto) throws SQLException, ConstraintViolationException {
+    @PostMapping
+    public ResponseDto<AbsenseRespDto> insertAbsence(@RequestBody AbsenseRqDto absenseRqDto) throws SQLException, ConstraintViolationException {
 
         Validator.notNull(absenseRqDto);
 
         return facade.insertAttendance(absenseRqDto);
     }
 
-    public ResponseDto<Void> updateAttendance(Absense absense, Boolean isAbsent) throws SQLException, ConstraintViolationException {
-        if (findAttendance(absense.getId()).getResult().isPresent()) {
+    @PatchMapping("/{id}")
+    public ResponseDto<Void> updateAttendance(@PathVariable UUID id, @RequestParam Boolean isAbsent) throws SQLException, ConstraintViolationException {
+
+        ResponseDto<Absense> absense = findAttendance(id);
+
+        if (absense.getResult().isPresent()) {
             Validator.notNull(absense);
-            return facade.updateAttendance(absense, isAbsent);
+            return facade.updateAttendance(absense.getResult().orElse(null), isAbsent);
         }
         return new ResponseDto<>(Optional.empty(), new ErrorDto("Attendance not found"));
     }
 
-    public Boolean checkAttendance(Absense absense) throws SQLException {
-        return facade.checkAttendance(absense);
+    @PostMapping("/check")
+    public Boolean checkAttendance(@PathVariable UUID id) throws SQLException {
+        return facade.checkAttendance(findAttendance(id).getResult().orElse(null));
     }
 
-    public ResponseDto<Double> calculateAttendance(User user, UUID classId) throws SQLException {
-        return facade.calculateAttendancePercent(user, classId);
+    @GetMapping()
+    public ResponseDto<Double> calculateAttendance(@RequestParam UUID userId, @RequestParam UUID classId) throws SQLException {
+        return facade.calculateAttendancePercent(facade.findUserById(userId).getResult().orElse(null), classId);
     }
 
-    public ResponseDto<Absense> findAttendance(UUID id) throws SQLException {
+    @GetMapping("/{id}")
+    public ResponseDto<Absense> findAttendance(@PathVariable UUID id) throws SQLException {
         return facade.findAttendance(id);
     }
 }
