@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.SchoolClass;
@@ -13,8 +14,9 @@ public class UserRepository {
 
     ConnectionPool connectionPool;
 
-    public UserRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    @Autowired
+    public UserRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public User save(User user) throws SQLException {
@@ -254,16 +256,24 @@ public class UserRepository {
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     User user = new User();
-                    user.setId(findPupilByClassId(schoolClass.getId()).get().getId());
-                    user.setLogin(findPupilByClassId(schoolClass.getId()).get().getLogin());
-                    user.setPassword(findPupilByClassId(schoolClass.getId()).get().getPassword());
-                    user.setName(findPupilByClassId(schoolClass.getId()).get().getName());
-                    user.setLastname(findPupilByClassId(schoolClass.getId()).get().getLastname());
-                    user.setRoleId(findPupilByClassId(schoolClass.getId()).get().getRoleId());
-                    user.setBlocked(findPupilByClassId(schoolClass.getId()).get().isBlocked());
-                    user.setClassId(findPupilByClassId(schoolClass.getId()).get().getClassId());
+                    user.setId(UUID.fromString(resultSet.getString("id")));
+                    user.setLogin(resultSet.getString("login"));
+                    user.setPassword(resultSet.getString("password"));
+                    user.setName(resultSet.getString("name"));
+                    user.setLastname(resultSet.getString("lastname"));
+                    user.setRoleId(UUID.fromString(resultSet.getString("role_id")));
+                    user.setBlocked(resultSet.getBoolean("is_blocked"));
+
+                    String classIdStr = resultSet.getString("class_id");
+                    if (classIdStr != null && !resultSet.wasNull()) {
+                        user.setClassId(UUID.fromString(classIdStr));
+                    } else {
+                        user.setClassId(null);
+                    }
+
                     pupils.add(user);
                 }
+
             }
             return pupils;
         } finally {

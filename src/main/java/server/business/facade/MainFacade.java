@@ -1,7 +1,7 @@
 package server.business.facade;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class MainFacade {
 

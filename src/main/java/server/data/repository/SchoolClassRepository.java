@@ -16,8 +16,8 @@ public class SchoolClassRepository {
 
     private final ConnectionPool connectionPool;
 
-    public SchoolClassRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public SchoolClassRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public SchoolClass save(SchoolClass schoolClass) throws SQLException {

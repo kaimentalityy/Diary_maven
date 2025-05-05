@@ -29,7 +29,7 @@ public class UserMapper {
         user.setPassword(createUserRqDto.password());
         user.setName(createUserRqDto.name());
         user.setLastname(createUserRqDto.lastname());
-        user.setRoleId(createUserRqDto.role());
+        user.setRoleId(createUserRqDto.roleId());
         user.setClassId(createUserRqDto.classId());
         return user;
     }

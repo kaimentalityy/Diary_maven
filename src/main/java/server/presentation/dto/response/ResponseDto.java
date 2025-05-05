@@ -8,11 +8,11 @@ import java.util.Optional;
 @AllArgsConstructor
 @RequiredArgsConstructor
 public class ResponseDto<T> {
-    private Optional<T> result;
+    private Optional<T> result = Optional.empty();
     private ErrorDto errorDto;
 
     public ResponseDto(ErrorDto errorDto) {
-        this.result = Optional.empty();  // No result
+        this.result = Optional.empty();
         this.errorDto = errorDto;
     }
 }

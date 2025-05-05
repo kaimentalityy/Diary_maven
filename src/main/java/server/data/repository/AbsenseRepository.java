@@ -14,8 +14,8 @@ public class AbsenseRepository {
 
     private final ConnectionPool connectionPool;
 
-    public AbsenseRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public AbsenseRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public Absense insertAttendance(Absense absense) throws SQLException {
@@ -52,11 +52,11 @@ public class AbsenseRepository {
     }
 
     public void updateAttendance(UUID id, boolean isAbsent) throws SQLException {
-        String query = "UPDATE attendance SET is_abscent = ? WHERE id = ?";
+        String query = "UPDATE attendance SET is_present = ? WHERE id = ?";
         Connection connection = null;
 
         Optional<Absense> absenceOpt = findAttendanceById(id);
-        if (!absenceOpt.isPresent()) {
+        if (absenceOpt.isEmpty()) {
             throw new IllegalArgumentException("No attendance record found with ID: " + id);
         }
 
@@ -83,7 +83,7 @@ public class AbsenseRepository {
     }
 
     public boolean checkAttendance(Absense absense) throws SQLException {
-        String query = "SELECT is_abscent FROM attendance WHERE id = ?";
+        String query = "SELECT is_present FROM attendance WHERE id = ?";
         boolean result = false;
         Connection connection = null;
 
@@ -142,7 +142,7 @@ public class AbsenseRepository {
             throw new IllegalArgumentException("User or user ID cannot be null");
         }
 
-        String query = "SELECT is_abscent FROM attendance WHERE pupil_id = ?";
+        String query = "SELECT is_present FROM attendance WHERE pupil_id = ?";
         Connection connection = null;
         int totalDays = 0;
         int daysPresent = 0;

@@ -18,8 +18,8 @@ public class SubjectRepository {
 
     private final ConnectionPool connectionPool;
 
-    public SubjectRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public SubjectRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public Subject save(Subject subject) throws SQLException {

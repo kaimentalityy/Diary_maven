@@ -19,20 +19,21 @@ public class LessonRepository {
 
     private final ConnectionPool connectionPool;
 
-    public LessonRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public LessonRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
-    public Lesson save(Lesson lesson) {
+    public Lesson save(Lesson lesson) throws SQLException {
         insertLesson(lesson);
         return lesson;
     }
 
-    public void insertLesson(Lesson lesson) {
+    public void insertLesson(Lesson lesson) throws SQLException {
         String query = "INSERT INTO lesson VALUES (?,?,?,?,?)";
+        Connection connection = null;
 
         try {
-            Connection connection = connectionPool.connectToDataBase();
+            connection = connectionPool.connectToDataBase();
             PreparedStatement statement = connection.prepareStatement(query);
 
             if (lesson.getId() != null) {
@@ -53,6 +54,10 @@ public class LessonRepository {
             }
         } catch (SQLException e) {
             e.printStackTrace();
+        } finally {
+            if (connection != null) {
+                connectionPool.releaseConnection(connection);
+            }
         }
     }
 

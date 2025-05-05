@@ -1,5 +1,6 @@
 package server.data.repository;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.TeacherOfSubject;
@@ -15,8 +16,9 @@ public class TeacherOfSubjectRepository {
 
     private final ConnectionPool connectionPool;
 
-    public TeacherOfSubjectRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    @Autowired
+    public TeacherOfSubjectRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public TeacherOfSubject save(TeacherOfSubject teacherOfSubject) throws SQLException {

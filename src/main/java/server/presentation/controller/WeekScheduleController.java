@@ -47,4 +47,10 @@ public class WeekScheduleController {
     public ResponseDto<WeekSchedule> findLessonById(@PathVariable UUID id) throws SQLException {
         return facade.findWeekScheduleById(id);
     }
+
+    @GetMapping("/testSimple")
+    public String test() {
+        return "It works!";
+    }
+
 }

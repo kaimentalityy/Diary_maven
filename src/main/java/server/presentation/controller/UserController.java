@@ -12,7 +12,6 @@ import server.utils.Validator;
 import server.utils.exception.badrequest.ConstraintViolationException;
 
 import java.sql.SQLException;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -30,38 +29,25 @@ public class UserController {
         return facade.createUser(createUserRqDto);
     }
 
-    @DeleteMapping("/{login}")
-    public ResponseDto<Void> deleteUser(@PathVariable String login) throws SQLException, ConstraintViolationException {
-        Validator.notNull(login);
-
-        ResponseDto<User> userDto = facade.findUserByLogin(login);
-        Optional<User> userOpt = userDto.getResult();
-
-        if (userOpt.isPresent()) {
-            return facade.deleteUser(userOpt.get());
-        }
-
-        return new ResponseDto<>(Optional.empty(), new ErrorDto("User not found"));
-    }
-
-
     @GetMapping("/{id}")
     public ResponseDto<User> findUserById(@PathVariable UUID id) throws SQLException {
-         return facade.findUserById(id);
+        return facade.findUserById(id);
     }
 
-    @GetMapping("/{login}")
+    @GetMapping("/login/{login}")
     public ResponseDto<User> findUserByLogin(@PathVariable String login) throws SQLException {
         return facade.findUserByLogin(login);
     }
 
     @PatchMapping("/{login}")
     public ResponseDto<Void> updateUser(@PathVariable String login) throws SQLException, ConstraintViolationException {
-        if (findUserByLogin(login).getResult().isPresent()) {
+        ResponseDto<User> userResponse = findUserByLogin(login);
+
+        if (userResponse.getResult() != null) {
             Validator.notNull(login);
             return facade.updateUser(login);
+        } else {
+            return new ResponseDto<>(null, new ErrorDto("User not found"));
         }
-        return new ResponseDto<>(Optional.empty(), new ErrorDto("User not found"));
     }
 }
-

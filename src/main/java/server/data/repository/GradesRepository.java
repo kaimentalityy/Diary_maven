@@ -17,8 +17,8 @@ public class GradesRepository {
 
     private final ConnectionPool connectionPool;
 
-    public GradesRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public GradesRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public Grades saveGrade(Grades grades) throws SQLException {

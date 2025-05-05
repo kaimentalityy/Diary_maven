@@ -21,8 +21,8 @@ public class WeekScheduleRepository {
 
     private final ConnectionPool connectionPool;
 
-    public WeekScheduleRepository() throws SQLException {
-        connectionPool = ConnectionPool.getInstance();
+    public WeekScheduleRepository(ConnectionPool connectionPool) {
+        this.connectionPool = connectionPool;
     }
 
     public WeekSchedule save(WeekSchedule weekSchedule) throws SQLException {
@@ -166,8 +166,8 @@ public class WeekScheduleRepository {
     }
 
     public List<Lesson> getAllLessonsInADay(DayOfWeek dayOfWeek, Lesson lesson1) throws SQLException {
-        String query = "SELECT * FROM week_schedule WHERE lesson_id = ? AND day_of_week_id = ?";
-        List<Lesson> lessons = new ArrayList<Lesson>();
+        String query = "SELECT * FROM week_schedule WHERE lesson_id = ? AND day_of_week = ?";
+        List<Lesson> lessons = new ArrayList<>();
         Connection connection = null;
 
         try {
