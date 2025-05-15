@@ -15,20 +15,24 @@ public class TeacherOfSubjectService {
 
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;
 
-    public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) throws SQLException {
+    public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) {
         teacherOfSubject.setId(UUID.randomUUID());
         return teacherOfSubjectRepository.save(teacherOfSubject);
     }
 
-    public void deleteTeacher(TeacherOfSubject teacherOfSubject) throws SQLException {
-        teacherOfSubjectRepository.deleteById(teacherOfSubject.getId());
+    public void deleteTeacher(UUID id) {
+        teacherOfSubjectRepository.deleteById(id);
     }
 
-    public void updateTeacher(UUID id) throws SQLException {
+    public void updateTeacher(UUID id) {
         teacherOfSubjectRepository.updateTeacher(id);
     }
 
-    public Optional<TeacherOfSubject> findById(UUID id) throws SQLException {
+    public Optional<TeacherOfSubject> findById(UUID id) {
         return teacherOfSubjectRepository.findTeacherById(id);
+    }
+
+    public boolean doesTeacherExist(UUID id) {
+        return teacherOfSubjectRepository.doesTeacherExist(id);
     }
 }

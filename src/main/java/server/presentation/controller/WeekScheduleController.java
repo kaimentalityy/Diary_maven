@@ -1,56 +1,54 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
 import server.presentation.dto.request.WeekScheduleRqDto;
-import server.presentation.dto.response.ResponseDto;
 import server.presentation.dto.response.WeekScheduleRespDto;
 import server.utils.Validator;
-import server.utils.exception.badrequest.ConstraintViolationException;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/weekSchedules")
+@RequestMapping("/api/week-schedules")
 public class WeekScheduleController {
 
     private final MainFacade facade;
 
     @PostMapping
-    public ResponseDto<WeekScheduleRespDto> addWeekSchedule(@RequestBody WeekScheduleRqDto weekScheduleRqDto) throws SQLException, ConstraintViolationException {
-
+    public ResponseEntity<WeekScheduleRespDto> addWeekSchedule(@RequestBody WeekScheduleRqDto weekScheduleRqDto) {
         Validator.notNull(weekScheduleRqDto);
-
-        return facade.addLessonWeekSchedule(weekScheduleRqDto);
+        WeekScheduleRespDto response = facade.addLessonWeekSchedule(weekScheduleRqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseDto<Void> removeLessonFromSchedule(@PathVariable UUID id) throws SQLException {
-
-        ResponseDto<WeekSchedule> weekSchedule = facade.findWeekScheduleById(id);
-
-        return facade.removeLessonFromSchedule(weekSchedule.getResult().orElse(null));
+    public ResponseEntity<Void> removeLessonFromSchedule(@PathVariable UUID id) {
+        Validator.notNull(id);
+        WeekSchedule schedule = facade.findWeekScheduleById(id);
+        facade.removeLessonFromSchedule(schedule);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping
-    public List<Lesson> findAllLessonsInADay(@RequestParam int dayOfWeekId, @RequestParam UUID schoolClassId) throws SQLException {
-        return facade.findAllLessonsInADay(facade.findDayOfWeekById(dayOfWeekId).getResult().orElse(null), schoolClassId);
+    @GetMapping("/day-lessons")
+    public ResponseEntity<List<Lesson>> findAllLessonsInADay(@RequestParam int dayOfWeekId, @RequestParam UUID schoolClassId) {
+        Validator.notNull(dayOfWeekId);
+        Validator.notNull(schoolClassId);
+        List<Lesson> lessons = facade.findAllLessonsInADay(facade.findDayOfWeekById(dayOfWeekId), schoolClassId);
+        return ResponseEntity.ok(lessons);
     }
 
     @GetMapping("/{id}")
-    public ResponseDto<WeekSchedule> findLessonById(@PathVariable UUID id) throws SQLException {
-        return facade.findWeekScheduleById(id);
+    public ResponseEntity<WeekSchedule> findWeekScheduleById(@PathVariable UUID id) {
+        Validator.notNull(id);
+        WeekSchedule schedule = facade.findWeekScheduleById(id);
+        return ResponseEntity.ok(schedule);
     }
-
-    @GetMapping("/testSimple")
-    public String test() {
-        return "It works!";
-    }
-
 }
+

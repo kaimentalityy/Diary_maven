@@ -1,17 +1,14 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.User;
 import server.presentation.dto.request.CreateUserRqDto;
 import server.presentation.dto.response.CreateUserRespDto;
-import server.presentation.dto.response.ErrorDto;
-import server.presentation.dto.response.ResponseDto;
-import server.utils.Validator;
-import server.utils.exception.badrequest.ConstraintViolationException;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 @RestController
@@ -22,32 +19,33 @@ public class UserController {
     private final MainFacade facade;
 
     @PostMapping
-    public ResponseDto<CreateUserRespDto> createAccount(@RequestBody CreateUserRqDto createUserRqDto) throws ConstraintViolationException, SQLException {
-        Validator.notNull(createUserRqDto.login());
-        Validator.length(createUserRqDto.login(), 0, 20);
-
-        return facade.createUser(createUserRqDto);
+    public ResponseEntity<CreateUserRespDto> createAccount(@RequestBody CreateUserRqDto createUserRqDto) {
+        CreateUserRespDto response = facade.createUser(createUserRqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @GetMapping("/{id}")
-    public ResponseDto<User> findUserById(@PathVariable UUID id) throws SQLException {
-        return facade.findUserById(id);
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable UUID id) {
+        facade.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/login/{login}")
-    public ResponseDto<User> findUserByLogin(@PathVariable String login) throws SQLException {
-        return facade.findUserByLogin(login);
+    @GetMapping("/user/{id}")
+    public ResponseEntity<User> findUserById(@PathVariable UUID id) {
+        User user = facade.findUserById(id);
+        return ResponseEntity.ok(user);
     }
 
-    @PatchMapping("/{login}")
-    public ResponseDto<Void> updateUser(@PathVariable String login) throws SQLException, ConstraintViolationException {
-        ResponseDto<User> userResponse = findUserByLogin(login);
+    @GetMapping("/user/login/{login}")
+    public ResponseEntity<User> findUserByLogin(@PathVariable String login) {
+        User user = facade.findUserByLogin(login);
+        return ResponseEntity.ok(user);
+    }
 
-        if (userResponse.getResult() != null) {
-            Validator.notNull(login);
-            return facade.updateUser(login);
-        } else {
-            return new ResponseDto<>(null, new ErrorDto("User not found"));
-        }
+    @PatchMapping("/{id}")
+    public ResponseEntity<Void> updateUser(@PathVariable UUID id) {
+        facade.updateUser(id);
+        return ResponseEntity.noContent().build();
     }
 }
+

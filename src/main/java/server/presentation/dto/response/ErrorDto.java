@@ -1,4 +1,15 @@
 package server.presentation.dto.response;
 
-public record ErrorDto(String message) {
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
+public class ErrorDto {
+
+    private String message;
+    private int status;
+    private String error;
 }

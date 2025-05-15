@@ -15,16 +15,20 @@ public class SchoolClassService {
 
     private final SchoolClassRepository schoolClassRepository;
 
-    public SchoolClass createClass(SchoolClass schoolClass) throws SQLException {
+    public SchoolClass createClass(SchoolClass schoolClass) {
         schoolClass.setId(UUID.randomUUID());
         return schoolClassRepository.save(schoolClass);
     }
 
-    public void deleteClass(SchoolClass schoolClass) throws SQLException {
-        schoolClassRepository.deleteClass(schoolClass.getId());
+    public void deleteClass(UUID id) {
+        schoolClassRepository.deleteClass(id);
     }
 
-    public Optional<SchoolClass> findClassById(UUID id) throws SQLException {
+    public Optional<SchoolClass> findClassById(UUID id) {
         return schoolClassRepository.findClassById(id);
+    }
+
+    public boolean doesClassExist(UUID id) {
+        return schoolClassRepository.doesSchoolClassExist(id);
     }
 }

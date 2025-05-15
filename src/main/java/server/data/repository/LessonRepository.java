@@ -3,6 +3,7 @@ package server.data.repository;
 import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.Lesson;
+import server.utils.exception.internalerror.DatabaseOperationException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -23,126 +24,95 @@ public class LessonRepository {
         this.connectionPool = connectionPool;
     }
 
-    public Lesson save(Lesson lesson) throws SQLException {
+    public Lesson save(Lesson lesson) {
         insertLesson(lesson);
         return lesson;
     }
 
-    public void insertLesson(Lesson lesson) throws SQLException {
+    public void insertLesson(Lesson lesson) {
         String query = "INSERT INTO lesson VALUES (?,?,?,?,?)";
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement statement = connection.prepareStatement(query);
 
-            if (lesson.getId() != null) {
-                statement.setObject(1, lesson.getId());
-                statement.setObject(2, lesson.getClassId());
-                statement.setObject(3, lesson.getTeacherOfSubjectId());
-                statement.setObject(4, lesson.getDate());
-                statement.setObject(5, lesson.getSubjectId());
+            statement.setObject(1, lesson.getId());
+            statement.setObject(2, lesson.getClassId());
+            statement.setObject(3, lesson.getTeacherOfSubjectId());
+            statement.setObject(4, lesson.getDate());
+            statement.setObject(5, lesson.getSubjectId());
 
-                int rowsInserted = statement.executeUpdate();
-                if (rowsInserted > 0) {
-                    System.out.println("Inserted " + rowsInserted + " lessons");
-                } else {
-                    System.out.println("Error inserting lessons");
-                }
-            } else {
-                System.out.println("Lesson does not exist");
+            int rowsInserted = statement.executeUpdate();
+            if (rowsInserted == 0) {
+                throw new DatabaseOperationException("Failed to insert lesson");
             }
+
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+            throw new DatabaseOperationException("Failed to insert lesson", e);
         }
     }
 
-    public Optional<Lesson> findById(UUID id) throws SQLException {
+    public Optional<Lesson> findById(UUID id) {
         String query = "SELECT * FROM lesson WHERE id = ?";
-        Connection connection = null;
-        Lesson lesson = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    lesson = new Lesson();
+                    Lesson lesson = new Lesson();
                     lesson.setId(UUID.fromString(resultSet.getString("id")));
                     lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
                     lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
                     lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
                     lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
-                } else {
-                    System.out.println("No lesson found for ID: " + id);
-                    return Optional.empty();
+
+                    return Optional.of(lesson);
                 }
             }
-            return Optional.of(lesson);
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find lesson", e);
         }
     }
 
-    public Optional<Lesson> findByClassId(UUID classId) throws SQLException {
+    public Optional<Lesson> findByClassId(UUID classId) {
         String query = "SELECT * FROM lesson WHERE class_id = ?";
-        Lesson lesson;
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            if (classId == null) {
-                throw new IllegalArgumentException("Class_id cannot be null");
-            }
 
             preparedStatement.setObject(1, classId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    lesson = new Lesson();
+                    Lesson lesson = new Lesson();
                     lesson.setId(UUID.fromString(resultSet.getString("id")));
                     lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
                     lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
                     lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
                     lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
-                } else {
-                    System.out.println("No lesson found for ID: " + classId);
-                    return Optional.empty();
+
+                    return Optional.of(lesson);
                 }
             }
-            return Optional.of(lesson);
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find lesson", e);
         }
-
     }
 
-    public List<Lesson> findBySubjectId(UUID subjectId) throws SQLException {
+    public List<Lesson> findBySubjectId(UUID subjectId) {
         String query = "SELECT * FROM lesson WHERE subject_id = ?";
         List<Lesson> lessons = new ArrayList<>();
 
-        Connection connection = null;
-
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            if (subjectId == null) {
-                throw new IllegalArgumentException("SubjectId cannot be null");
-            }
 
             preparedStatement.setObject(1, subjectId);
 
@@ -158,68 +128,79 @@ public class LessonRepository {
                 }
             }
             return lessons;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find lessons", e);
         }
     }
 
 
-    public List<Lesson> findAllByDate(LocalDateTime localDateTime) throws SQLException {
+    public List<Lesson> findAllByDate(LocalDateTime localDateTime) {
         String query = "SELECT * FROM lesson WHERE date = ?";
         List<Lesson> lessons = new ArrayList<>();
-        Lesson lesson;
-        Connection connection = null;
 
-        try {
-            connection = connectionPool.connectToDataBase();
-             PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            if (localDateTime == null) {
-                throw new IllegalArgumentException("date and time cannot be null");
-            }
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, localDateTime);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    lesson = (Lesson) resultSet.getObject("date");
+                while (resultSet.next()) {
+                    Lesson lesson = new Lesson();
+                    lesson.setId(UUID.fromString(resultSet.getString("id")));
+                    lesson.setClassId(UUID.fromString(resultSet.getString("class_id")));
+                    lesson.setTeacherOfSubjectId(UUID.fromString(resultSet.getString("teacher_of_subject_id")));
+                    lesson.setDate(resultSet.getTimestamp("date").toLocalDateTime());
+                    lesson.setSubjectId(UUID.fromString(resultSet.getString("subject_id")));
                     lessons.add(lesson);
-                } else {
-                    System.out.println("No date found at this date : " + localDateTime);
                 }
             }
+
             return lessons;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find lessons for date: " + localDateTime, e);
         }
     }
 
-    public void deleteById(UUID id) throws SQLException {
+
+    public void deleteById(UUID id) {
         String query = "DELETE FROM lesson WHERE id = ?";
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, id);
             int rowsDeleted = preparedStatement.executeUpdate();
 
-            if (rowsDeleted > 0) {
-                System.out.println("Lesson deleted successfully: " + id);
-            } else {
-                System.out.println("Lesson not found: " + id);
+            if (rowsDeleted == 0) {
+                throw new DatabaseOperationException("Failed to delete lesson");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
+            throw new DatabaseOperationException("Failed to delete lesson", e);
+        }
+    }
+
+    public boolean doesLessonExist(UUID id) {
+        String query = "SELECT COUNT(*) FROM lesson WHERE id <> ? AND date = ? AND subject_id = ? AND teacher_of_subject_id = ? AND class_id = ?";
+
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            Lesson lesson = findById(id).orElseThrow(() -> new DatabaseOperationException("Lesson with id " + id + " does not exist."));
+
+            preparedStatement.setObject(1, lesson.getDate());
+            preparedStatement.setObject(2, lesson.getSubjectId());
+            preparedStatement.setObject(3, lesson.getTeacherOfSubjectId());
+            preparedStatement.setObject(4, lesson.getClassId());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return preparedStatement.executeQuery().getInt(1) > 0;
             }
+            return  false;
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Failed to find lesson with id: " + id, e);
         }
     }
 }

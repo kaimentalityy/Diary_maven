@@ -5,19 +5,11 @@ import server.data.entity.Grades;
 import server.presentation.dto.request.GradeRqDto;
 import server.presentation.dto.response.ErrorDto;
 import server.presentation.dto.response.GradeRespDto;
-import server.presentation.dto.response.ResponseDto;
 
 import java.util.Optional;
 
 @Component
 public class GradesMapper {
-
-    public <T> ResponseDto<T> toResponseDto(T result, ErrorDto errorDto) {
-        if (result == null) {
-            return new ResponseDto<>(errorDto);
-        }
-        return new ResponseDto<>(Optional.of(result), errorDto);
-    }
 
     public GradeRespDto toGradeRespDto(Grades grades) {
         return new GradeRespDto(grades.getId(), grades.getPupilId(), grades.getLessonId(), grades.getGrade());

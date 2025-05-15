@@ -22,23 +22,27 @@ public class LessonService {
         return lessonRepository.save(lesson);
     }
 
-    public Optional<Lesson> findByLessonId(UUID lessonId) throws SQLException {
+    public Optional<Lesson> findByLessonId(UUID lessonId) {
         return lessonRepository.findById(lessonId);
     }
 
-    public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) throws SQLException {
+    public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
         return lessonRepository.findAllByDate(localDateTime);
     }
 
-    public void deleteLesson(UUID lessonId) throws SQLException {
+    public void deleteLesson(UUID lessonId) {
         lessonRepository.deleteById(lessonId);
     }
 
-    public Optional<Lesson> findByClassId(UUID classId) throws SQLException {
+    public Optional<Lesson> findByClassId(UUID classId) {
         return lessonRepository.findByClassId(classId);
     }
 
-    public List<Lesson> findBySubjectsId(UUID subjectId) throws SQLException {
+    public List<Lesson> findBySubjectsId(UUID subjectId) {
         return lessonRepository.findBySubjectId(subjectId);
+    }
+
+    public boolean doesLessonExist(UUID lessonId) {
+        return lessonRepository.doesLessonExist(lessonId);
     }
 }

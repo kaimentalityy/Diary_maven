@@ -1,10 +1,10 @@
 package server.presentation.controller;
 
 import jakarta.annotation.PostConstruct;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import server.presentation.dto.response.ResponseDto;
 
 import java.util.Optional;
 
@@ -18,8 +18,9 @@ public class PingController {
     }
 
     @GetMapping("/test-optional")
-    public ResponseDto<String> testOptionalResponse() {
-        return new ResponseDto<>(Optional.of("Hello from Optional!"), null);
+    public ResponseEntity<String> testOptionalResponse() {
+        String str = "test-optional";
+        return ResponseEntity.ok().body(str);
     }
 
     @GetMapping("/pingSimple1")

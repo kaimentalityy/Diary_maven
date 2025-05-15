@@ -1,19 +1,16 @@
 package server.presentation.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Subject;
 import server.presentation.dto.request.SubjectRqDto;
-import server.presentation.dto.response.ErrorDto;
-import server.presentation.dto.response.ResponseDto;
 import server.presentation.dto.response.SubjectRespDto;
 import server.utils.Validator;
-import server.utils.exception.badrequest.ConstraintViolationException;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,36 +21,36 @@ public class SubjectController {
     private final MainFacade facade;
 
     @PostMapping
-    public ResponseDto<SubjectRespDto> addSubject(@RequestBody SubjectRqDto subjectRqDto) throws SQLException, ConstraintViolationException {
-
+    public ResponseEntity<SubjectRespDto> addSubject(@RequestBody SubjectRqDto subjectRqDto) {
         Validator.notNull(subjectRqDto);
-        return facade.createSubject(subjectRqDto);
+        SubjectRespDto subjectRespDto = facade.createSubject(subjectRqDto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(subjectRespDto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseDto<Void> deleteSubject(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
-
-        ResponseDto<Subject> subject = facade.findSubjectById(id);
-
-        if (findSubjectById(subject.getResult().orElse(null).getId()).getResult().isPresent()) {
-            Validator.notNull(subject);
-            return facade.deleteSubject(subject.getResult().orElse(null));
-        }
-        return new ResponseDto<>(Optional.empty(), new ErrorDto("Subject not found"));
+    public ResponseEntity<Void> deleteSubject(@PathVariable UUID id) {
+        Validator.notNull(id);
+        facade.deleteSubject(id);
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseDto<Subject> findSubjectById(@PathVariable UUID id) throws SQLException {
-        return facade.findSubjectById(id);
+    @GetMapping("/by-id/{id}")
+    public ResponseEntity<Subject> findSubjectById(@PathVariable UUID id) {
+        Validator.notNull(id);
+        Subject subject = facade.findSubjectById(id);
+        return ResponseEntity.ok(subject);
     }
 
     @GetMapping
-    public List<Subject> findAllSubjects() throws SQLException {
-        return facade.findAllSubjects();
+    public ResponseEntity<List<Subject>> findAllSubjects() {
+        List<Subject> subjects = facade.findAllSubjects();
+        return ResponseEntity.ok(subjects);
     }
 
-    @GetMapping("/{name}")
-    public ResponseDto<Subject> findSubjectByName(@PathVariable String name) throws SQLException {
-        return facade.findSubjectByName(name);
+    @GetMapping("/by-name/{name}")
+    public ResponseEntity<Subject> findSubjectByName(@PathVariable String name) {
+        Validator.notNull(name);
+        Subject subject = facade.findSubjectByName(name);
+        return ResponseEntity.ok(subject);
     }
 }

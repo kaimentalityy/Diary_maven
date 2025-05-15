@@ -15,24 +15,28 @@ import java.util.UUID;
 public class AbsenseService {
     private final AbsenseRepository absenseRepository;
 
-    public Absense insertAbsence(Absense absense) throws SQLException {
+    public Absense insertAbsence(Absense absense) {
         absense.setId(UUID.randomUUID());
         return absenseRepository.insertAttendance(absense);
     }
 
-    public Optional<Absense> findAttendanceById(UUID id) throws SQLException {
+    public Optional<Absense> findAttendanceById(UUID id) {
         return absenseRepository.findAttendanceById(id);
     }
 
-    public void updateAttendance(Absense absense, Boolean isAbscent) throws SQLException {
-        absenseRepository.updateAttendance(absense.getId(), isAbscent);
+    public void updateAttendance(UUID id, Boolean isAbscent) {
+        absenseRepository.updateAttendance(id, isAbscent);
     }
 
-    public boolean checkAttendance(Absense absense) throws SQLException {
-        return absenseRepository.checkAttendance(absense);
+    public boolean checkAttendance(UUID id) {
+        return absenseRepository.checkAttendance(id);
     }
 
-    public Double calculateAttendance(User user) throws SQLException {
-        return absenseRepository.calculateAttendance(user);
+    public Double calculateAttendance(UUID id) {
+        return absenseRepository.calculateAttendance(id);
+    }
+
+    public boolean doesAttendanceExist(UUID id) {
+        return absenseRepository.doesAbsenceExist(id);
     }
 }

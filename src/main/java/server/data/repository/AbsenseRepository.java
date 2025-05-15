@@ -3,7 +3,8 @@ package server.data.repository;
 import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.Absense;
-import server.data.entity.User;
+import server.utils.exception.internalerror.DatabaseOperationException;
+import server.utils.exception.notfound.AbsenseNotFoundException;
 
 import java.sql.*;
 import java.util.Optional;
@@ -18,18 +19,11 @@ public class AbsenseRepository {
         this.connectionPool = connectionPool;
     }
 
-    public Absense insertAttendance(Absense absense) throws SQLException {
-        insertAbsence(absense);
-        return absense;
-    }
-
-    public void insertAbsence(Absense absense) throws SQLException {
+    public Absense insertAttendance(Absense absense) {
         String query = "INSERT INTO attendance VALUES (?,?,?,?,?)";
-        Connection connection = null;
 
-        try {
-            connection = connectionPool.connectToDataBase();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setObject(1, absense.getLessonId());
             statement.setObject(2, absense.getId());
@@ -37,121 +31,96 @@ public class AbsenseRepository {
             statement.setBoolean(4, true);
             statement.setObject(5, absense.getDate());
 
-
             int rowsInserted = statement.executeUpdate();
-            if (rowsInserted > 0) {
-                System.out.println("Inserted " + rowsInserted + " absense");
-            } else {
-                System.out.println("Error inserting absense");
+            if (rowsInserted == 0) {
+                throw new DatabaseOperationException("Failed to insert absence record.");
             }
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error inserting absence record.", e);
         }
+
+        return absense;
     }
 
-    public void updateAttendance(UUID id, boolean isAbsent) throws SQLException {
+    public void updateAttendance(UUID id, boolean isPresent) {
         String query = "UPDATE attendance SET is_present = ? WHERE id = ?";
-        Connection connection = null;
 
-        Optional<Absense> absenceOpt = findAttendanceById(id);
-        if (absenceOpt.isEmpty()) {
-            throw new IllegalArgumentException("No attendance record found with ID: " + id);
-        }
+        Absense absence = findAttendanceById(id).orElseThrow(
+                () -> new AbsenseNotFoundException("No attendance record found with ID: " + id)
+        );
 
-        Absense absence = absenceOpt.get();
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-        try {
-            connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setBoolean(1, isAbsent);
+            preparedStatement.setBoolean(1, isPresent);
             preparedStatement.setObject(2, absence.getId());
 
             int rowsUpdated = preparedStatement.executeUpdate();
-            if (rowsUpdated > 0) {
-                System.out.println("Absence successfully updated.");
-            } else {
-                System.out.println("Failed to update absence.");
+            if (rowsUpdated == 0) {
+                throw new DatabaseOperationException("Failed to update absence for ID: " + id);
             }
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error updating attendance.", e);
         }
     }
 
-    public boolean checkAttendance(Absense absense) throws SQLException {
+    public boolean checkAttendance(UUID id) {
         String query = "SELECT is_present FROM attendance WHERE id = ?";
-        boolean result = false;
-        Connection connection = null;
 
-        try {
-            connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            preparedStatement.setObject(1, absense.getId());
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.getBoolean("is_abscent")) {
-                    result = true;
-                }
-            }
-            return result;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
-        }
-    }
-
-    public Optional<Absense> findAttendanceById(UUID id) throws SQLException {
-        String query = "SELECT * FROM attendance WHERE id = ?";
-        Connection connection = null;
-        Absense absense = null;
-
-        try {
-            connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, id);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    absense = new Absense();
-                    absense.setId(UUID.fromString(resultSet.getString("id")));
-                    absense.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
-                    absense.setPupilId(UUID.fromString(resultSet.getString("pupil_id")));
-                    absense.setAbsence(resultSet.getBoolean("is_absent"));
-                } else {
-                    System.out.println("No attendance found with id: " + id);
+                    return resultSet.getBoolean("is_absent");
                 }
+                throw new AbsenseNotFoundException("No attendance record found with ID: " + id);
             }
-            return Optional.ofNullable(absense);
 
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error checking attendance status.", e);
         }
     }
 
-    public Double calculateAttendance(User user) throws SQLException {
-        if (user == null || user.getId() == null) {
-            throw new IllegalArgumentException("User or user ID cannot be null");
-        }
+    public Optional<Absense> findAttendanceById(UUID id) {
+        String query = "SELECT * FROM attendance WHERE id = ?";
 
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            preparedStatement.setObject(1, id);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                if (resultSet.next()) {
+                    Absense absense = new Absense();
+                    absense.setId(UUID.fromString(resultSet.getString("id")));
+                    absense.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
+                    absense.setPupilId(UUID.fromString(resultSet.getString("pupil_id")));
+                    absense.setIsPresent(resultSet.getBoolean("is_absent"));
+                    return Optional.of(absense);
+                }
+            }
+
+            return Optional.empty();
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error finding attendance by ID.", e);
+        }
+    }
+
+    public Double calculateAttendance(UUID pupilId) {
         String query = "SELECT is_present FROM attendance WHERE pupil_id = ?";
-        Connection connection = null;
         int totalDays = 0;
         int daysPresent = 0;
 
-        try {
-            connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setObject(1, user.getId());
+            preparedStatement.setObject(1, pupilId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -162,12 +131,34 @@ public class AbsenseRepository {
                     }
                 }
             }
-            return totalDays > 0 ? (double) daysPresent / totalDays * 100 : 0.0;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
-        }
 
+            return totalDays > 0 ? (double) daysPresent / totalDays * 100 : 0.0;
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error calculating attendance.", e);
+        }
+    }
+
+    public boolean doesAbsenceExist(UUID id) {
+        String query = "SELECT COUNT(*) FROM attendance WHERE lesson_id = ? AND pupil_id = ? AND is_present = ? AND date = ? AND id <> ?";
+
+        try (Connection connection = connectionPool.connectToDataBase();
+        PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            Absense absence = findAttendanceById(id).orElseThrow(()  -> new AbsenseNotFoundException("No attendance record found with ID: " + id));
+
+            preparedStatement.setObject(1, absence.getLessonId());
+            preparedStatement.setObject(2, absence.getPupilId());
+            preparedStatement.setObject(3, absence.getIsPresent());
+            preparedStatement.setDate(4, absence.getDate());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
+            }
+            return false;
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error checking attendance status.", e);
+        }
     }
 }

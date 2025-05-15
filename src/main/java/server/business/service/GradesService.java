@@ -17,28 +17,32 @@ import java.util.UUID;
 public class GradesService {
     private final GradesRepository gradesRepository;
 
-    public Grades giveGrade(Grades grades) throws SQLException {
+    public Grades giveGrade(Grades grades) {
         grades.setId(UUID.randomUUID());
         return gradesRepository.saveGrade(grades);
     }
 
-    public Optional<Grades> findGradeById(UUID id) throws SQLException {
+    public Optional<Grades> findGradeById(UUID id) {
         return gradesRepository.findGradeById(id);
     }
 
-    public void removeGrade(Grades grades) throws SQLException {
-        gradesRepository.removeGrade(grades.getId());
+    public void removeGrade(UUID id) {
+        gradesRepository.removeGrade(id);
     }
 
-    public Double calculateAverageGrade(User user, List<Lesson> lesson) throws SQLException {
-        return gradesRepository.calculateAverageGradeOfSubject(user, lesson);
+    public Double calculateAverageGrade(UUID id, List<Lesson> lesson) {
+        return gradesRepository.calculateAverageGradeOfSubject(id, lesson);
     }
 
-    public void updateGrade(UUID id) throws SQLException {
+    public void updateGrade(UUID id) {
         gradesRepository.updateGrade(id);
     }
 
-    public List<String> getAllGradesOfPupil(User user, List<Lesson> lessons) throws SQLException {
-        return gradesRepository.getAllGradesOfPupil(user, lessons);
+    public List<String> getAllGradesOfPupil(UUID id, List<Lesson> lessons) {
+        return gradesRepository.getAllGradesOfPupil(id, lessons);
+    }
+
+    public boolean doesGradesExist(UUID id) {
+        return gradesRepository.doesGradesExist(id);
     }
 }

@@ -16,24 +16,28 @@ public class SubjectService {
 
     private final SubjectRepository subjectRepository;
 
-    public Subject createSubject(Subject subject) throws SQLException {
+    public Subject createSubject(Subject subject) {
         subject.setId(UUID.randomUUID());
         return subjectRepository.save(subject);
     }
 
-    public void deleteSubject(Subject subject) throws SQLException {
-        subjectRepository.deleteById(subject.getId());
+    public void deleteSubject(UUID id) {
+        subjectRepository.deleteById(id);
     }
 
-    public Optional<Subject> findSubjectById(UUID id) throws SQLException {
+    public Optional<Subject> findSubjectById(UUID id) {
         return subjectRepository.findById(id);
     }
 
-    public List<Subject> findAllSubjects() throws SQLException {
+    public List<Subject> findAllSubjects() {
         return subjectRepository.findAllSubjects();
     }
 
-    public Optional<Subject> findSubjectByName(String name) throws SQLException {
+    public Optional<Subject> findSubjectByName(String name) {
         return subjectRepository.findByName(name);
+    }
+
+    public boolean doesSubjectExist(UUID id) {
+        return subjectRepository.doesSubjectExist(id);
     }
 }

@@ -5,6 +5,8 @@ import server.db.ConnectionPool;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
+import server.utils.exception.internalerror.DatabaseOperationException;
+import server.utils.exception.notfound.LessonNotFoundException;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,73 +27,60 @@ public class WeekScheduleRepository {
         this.connectionPool = connectionPool;
     }
 
-    public WeekSchedule save(WeekSchedule weekSchedule) throws SQLException {
+    public WeekSchedule save(WeekSchedule weekSchedule) {
         insertLessonInSchedule(weekSchedule);
         return weekSchedule;
     }
 
-    public void insertLessonInSchedule(WeekSchedule weekSchedule) throws SQLException {
+    public void insertLessonInSchedule(WeekSchedule weekSchedule) {
         String query = "INSERT INTO week_schedule VALUES (?, ?, ?, ?)";
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, weekSchedule.getId());
             preparedStatement.setObject(2, weekSchedule.getWeekDayId());
             preparedStatement.setObject(3, weekSchedule.getLessonId());
             preparedStatement.setObject(4, weekSchedule.getLessonNumber());
 
-                int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Lesson " + weekSchedule.getLessonId() + " has been scheduled to " + weekSchedule.getWeekDayId());
-                } else {
-                    System.out.println("Error inserting day in schedule");
-                }
+            int rowsAffected = preparedStatement.executeUpdate();
+            if (rowsAffected == 0) {
+                throw new DatabaseOperationException("Failed to insert lesson in schedule");
+            }
 
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            connectionPool.releaseConnection(connection);
+            throw new DatabaseOperationException("Failed to insert lesson in schedule", e);
         }
     }
 
-    public void unscheduleLessonFromSchedule(WeekSchedule weekSchedule) throws SQLException {
+    public void unscheduleLessonFromSchedule(WeekSchedule weekSchedule) {
         String query = "DELETE FROM week_schedule WHERE id = ?";
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, weekSchedule.getId());
 
-            if (weekSchedule.getLessonNumber() != null) {
+            if (findLessonInSchedule(weekSchedule.getId()).isPresent()) {
                 int rowsAffected = preparedStatement.executeUpdate();
-                if (rowsAffected > 0) {
-                    System.out.println("Lesson " + weekSchedule.getLessonId() + " has been unscheduled");
-                } else {
-                    System.out.println("Error unscheduling lesson");
+                if (rowsAffected == 0) {
+                    throw new DatabaseOperationException("Failed to unschedule lesson from schedule");
                 }
             } else {
-                System.out.println("Lesson place is not occupied");
+                throw new LessonNotFoundException("Lesson not found");
             }
         } catch (SQLException e) {
-            e.printStackTrace();
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+            throw new DatabaseOperationException("Failed to unschedule lesson from schedule", e);
         }
     }
 
-    public Integer getLessonPlace(UUID id) throws SQLException {
+    public Integer getLessonPlace(UUID id) {
         String query = "SELECT lesson_number FROM week_schedule WHERE id = ?";
         Integer lessonNumber = null;
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, id);
@@ -105,49 +94,43 @@ public class WeekScheduleRepository {
             }
 
             return lessonNumber;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error getting lesson number" + e.getMessage());
         }
-
     }
 
-    public Optional<WeekSchedule> findLessonInSchedule(UUID id) throws SQLException {
+    public Optional<WeekSchedule> findLessonInSchedule(UUID id) {
         String query = "SELECT * FROM week_schedule WHERE id = ?";
-        WeekSchedule weekSchedule = null;
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, id);
 
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                weekSchedule = new WeekSchedule();
+                WeekSchedule weekSchedule = new WeekSchedule();
                 weekSchedule.setId(UUID.fromString(resultSet.getString("id")));
                 weekSchedule.setLessonNumber(resultSet.getInt("lesson_number"));
                 weekSchedule.setWeekDayId(Integer.valueOf(resultSet.getString("day_of_week_id")));
                 weekSchedule.setLessonId(UUID.fromString(resultSet.getString("lesson_id")));
+
+                Optional.of(weekSchedule);
             }
 
-            return Optional.ofNullable(weekSchedule);
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error finding lesson in schedule");
         }
     }
 
-    public Double countTotalHoursAWeek(Lesson lesson) throws SQLException {
+    public Double countTotalHoursAWeek(Lesson lesson) {
         String query = "SELECT COUNT(*) FROM week_schedule WHERE lesson_id = ?";
         double totalHoursAWeek = 0.0;
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
 
             preparedStatement.setObject(1, lesson.getId());
@@ -158,22 +141,18 @@ public class WeekScheduleRepository {
                 totalHoursAWeek = resultSet.getDouble(1);
             }
             return totalHoursAWeek;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
-            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error count total hours a week");
         }
     }
 
-    public List<Lesson> getAllLessonsInADay(DayOfWeek dayOfWeek, Lesson lesson1) throws SQLException {
+    public List<Lesson> getAllLessonsInADay(DayOfWeek dayOfWeek, Lesson lesson1) {
         String query = "SELECT * FROM week_schedule WHERE lesson_id = ? AND day_of_week = ?";
         List<Lesson> lessons = new ArrayList<>();
-        Connection connection = null;
 
         try {
-            connection = connectionPool.connectToDataBase();
+            Connection connection = connectionPool.connectToDataBase();
             PreparedStatement preparedStatement = connection.prepareStatement(query);
-
 
             preparedStatement.setObject(1, lesson1.getId());
             preparedStatement.setObject(2, dayOfWeek.getValue());
@@ -189,10 +168,31 @@ public class WeekScheduleRepository {
                 lessons.add(lesson);
             }
             return lessons;
-        } finally {
-            if (connection != null) {
-                connectionPool.releaseConnection(connection);
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error while getting lessons in day of week" + e.getMessage());
+        }
+    }
+
+    public boolean doesWeekScheduleExist(UUID id) {
+        String query = "SELECT COUNT(*) FROM week_schedule WHERE id <> ? AND lesson_number = ? AND day_of_week = ? AND lesson_id = ?";
+
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+
+            WeekSchedule weekSchedule = findLessonInSchedule(id).orElseThrow(() -> new DatabaseOperationException("Lesson " + id + " not found"));
+            preparedStatement.setObject(1, weekSchedule.getLessonNumber());
+            preparedStatement.setObject(2, weekSchedule.getWeekDayId());
+            preparedStatement.setObject(3, weekSchedule.getLessonId());
+
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            if (resultSet.next()) {
+                return resultSet.getInt(1) > 0;
             }
+            return false;
+
+        } catch (SQLException e) {
+            throw new DatabaseOperationException("Error getting lesson number" + e.getMessage());
         }
     }
 }

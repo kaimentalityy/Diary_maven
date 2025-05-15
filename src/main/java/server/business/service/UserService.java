@@ -16,29 +16,33 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
 
-    public Optional<User> findUserByLogin(String login) throws SQLException {
+    public Optional<User> findUserByLogin(String login) {
         return userRepository.findUserByLogin(login);
     }
 
-    public User save(User user) throws SQLException {
+    public User save(User user) {
         user.setId(UUID.randomUUID());
         userRepository.save(user);
         return user;
     }
 
-    public Optional<User> findUserByID(UUID id) throws SQLException {
+    public Optional<User> findUserByID(UUID id) {
         return userRepository.findUserById(id);
     }
 
-    public void delete(User user) throws SQLException {
-        userRepository.deleteUser(user.getLogin());
+    public void delete(UUID id) {
+        userRepository.deleteUser(id);
     }
 
-    public void update(String login) throws SQLException {
-        userRepository.updateUser(login);
+    public void update(UUID id) {
+        userRepository.updateUser(id);
     }
 
-    public List<User> findPupilsOfClass(SchoolClass schoolClass) throws SQLException {
-        return userRepository.getAllPupilsOfClass(schoolClass);
+    public List<User> findPupilsOfClass(UUID id) {
+        return userRepository.getAllPupilsOfClass(id);
+    }
+
+    public boolean doesUserExist(UUID id) {
+        return userRepository.doesUserExist(id);
     }
 }
