@@ -3,14 +3,11 @@ package server.data.repository;
 import org.springframework.stereotype.Repository;
 import server.db.ConnectionPool;
 import server.data.entity.TeacherOfSubject;
-import server.utils.exception.badrequest.InvalidColumnNameException;
-import server.utils.exception.internalerror.DatabaseOperationException;
-import server.utils.exception.notfound.TeacherNotFoundException;
+import server.utils.exception.badrequest.InvalidColumnNameExceptionCustom;
+import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
+import server.utils.exception.notfound.TeacherCustomNotFoundException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.*;
 
 @Repository
@@ -22,17 +19,21 @@ public class TeacherOfSubjectRepository {
         this.connectionPool = connectionPool;
     }
 
-    public TeacherOfSubject save(TeacherOfSubject teacherOfSubject) {
+    public TeacherOfSubject save(TeacherOfSubject teacherOfSubject) throws SQLException {
         insertTeacher(teacherOfSubject);
         return teacherOfSubject;
     }
 
-    public void insertTeacher(TeacherOfSubject teacherOfSubject) {
+    public TeacherOfSubject update(TeacherOfSubject teacherOfSubject) throws SQLException {
+        updateTeacher(teacherOfSubject);
+        return teacherOfSubject;
+    }
+
+    public void insertTeacher(TeacherOfSubject teacherOfSubject) throws SQLException {
         String insertQuery = "INSERT INTO teacher_of_subject VALUES (?, ?, ?)";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(insertQuery);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(insertQuery)) {
 
             preparedStatement.setObject(1, teacherOfSubject.getId());
             preparedStatement.setObject(2, teacherOfSubject.getSubjectId());
@@ -40,32 +41,27 @@ public class TeacherOfSubjectRepository {
 
             int rowsInserted = preparedStatement.executeUpdate();
             if (rowsInserted == 0) {
-                throw new DatabaseOperationException("Error in inserting teacher");
+                throw new DatabaseOperationExceptionCustom("Error in inserting teacher");
             }
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in inserting teacher", e);
         }
     }
 
-    public void deleteById(UUID id) {
+    public void deleteById(UUID id) throws SQLException {
         String query = "DELETE FROM teacher_of_subject WHERE id = ?";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, id);
             int rowsDeleted = preparedStatement.executeUpdate();
 
             if (rowsDeleted == 0) {
-                throw new DatabaseOperationException("Error in deleting teacher");
+                throw new DatabaseOperationExceptionCustom("Error in deleting teacher");
             }
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in deleting teacher", e);
         }
     }
 
-    public void updateTeacher(UUID id) {
+    public void updateTeacher(TeacherOfSubject teacherOfSubject) throws SQLException {
         Scanner scanner = new Scanner(System.in);
         List<String> allowedColumns = new ArrayList<>();
         allowedColumns.add("subject_id");
@@ -75,40 +71,34 @@ public class TeacherOfSubjectRepository {
         String column = scanner.nextLine();
 
         if (!allowedColumns.contains(column)) {
-            throw new InvalidColumnNameException("Invalid column name. Allowed columns are: " + allowedColumns);
+            throw new InvalidColumnNameExceptionCustom("Invalid column name. Allowed columns are: " + allowedColumns);
         }
 
         System.out.println("Please enter the updated value: ");
         String value = scanner.nextLine();
 
-        try {
-            TeacherOfSubject teacherOfSubject = findTeacherById(id).orElseThrow(() -> new TeacherNotFoundException(id));
-            String query = "UPDATE teacher_of_subject SET " + column + " = ? WHERE id = ?";
+        String query = "UPDATE teacher_of_subject SET " + column + " = ? WHERE id = ?";
 
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, value);
             preparedStatement.setObject(2, teacherOfSubject.getId());
 
             int rowsUpdated = preparedStatement.executeUpdate();
             if (rowsUpdated == 0) {
-                throw new DatabaseOperationException("Error in updating teacher");
+                throw new DatabaseOperationExceptionCustom("Error in updating teacher");
             }
-        } catch (SQLException e) {
-            throw  new DatabaseOperationException("Failed to update teacher", e);
         }
     }
 
-    public Optional<TeacherOfSubject> findTeacherById(UUID id) {
+    public Optional<TeacherOfSubject> findTeacherById(UUID id) throws SQLException {
         String query = "SELECT * FROM teacher_of_subject WHERE id = ?";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setObject(1, id);
-
             ResultSet resultSet = preparedStatement.executeQuery();
 
             if (resultSet.next()) {
@@ -121,30 +111,23 @@ public class TeacherOfSubjectRepository {
             }
 
             return Optional.empty();
-        } catch (SQLException e) {
-            throw  new DatabaseOperationException("Failed to find teacher", e);
         }
     }
 
-    public boolean doesTeacherExist(UUID id) {
+    public boolean doesTeacherExist(UUID id) throws SQLException {
         String query = "SELECT COUNT(*) FROM teacher_of_subject WHERE id <> ? AND subject_id = ? AND teacher_id = ?";
 
+        TeacherOfSubject teacherOfSubject = findTeacherById(id).orElseThrow(() -> new TeacherCustomNotFoundException("Teacher not found: " + id));
+
         try (Connection connection = connectionPool.connectToDataBase();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)){
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            TeacherOfSubject teacherOfSubject = findTeacherById(id).orElseThrow(() -> new TeacherNotFoundException(id));
-
-            preparedStatement.setObject(1, teacherOfSubject.getSubjectId());
-            preparedStatement.setObject(2, teacherOfSubject.getTeacherId());
+            preparedStatement.setObject(1, id);
+            preparedStatement.setObject(2, teacherOfSubject.getSubjectId());
+            preparedStatement.setObject(3, teacherOfSubject.getTeacherId());
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1) > 0;
-            }
-            return false;
-
-        } catch (SQLException e) {
-            throw  new DatabaseOperationException("Failed to find teacher", e);
+            return resultSet.next() && resultSet.getInt(1) > 0;
         }
     }
 }

@@ -2,7 +2,6 @@ package server.data.entity;
 
 import lombok.Data;
 
-import java.util.Objects;
 import java.util.UUID;
 
 @Data
@@ -16,5 +15,6 @@ public class User {
     private UUID roleId;
     private boolean isBlocked;
     private UUID classId;
+    private Integer age;
 
 }

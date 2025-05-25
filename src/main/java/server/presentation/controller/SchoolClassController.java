@@ -1,20 +1,17 @@
 package server.presentation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
 import server.presentation.dto.request.SchoolClassRqDto;
 import server.presentation.dto.response.SchoolClassRespDto;
-import server.utils.Validator;
-import server.utils.exception.badrequest.ConstraintViolationException;
+import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @RestController
@@ -24,31 +21,21 @@ public class SchoolClassController {
 
     private final MainFacade facade;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<SchoolClassRespDto> createSchoolClass(@RequestBody SchoolClassRqDto schoolClassRqDto) throws SQLException, ConstraintViolationException {
-        Validator.notNull(schoolClassRqDto);
-        SchoolClassRespDto schoolClassRespDto = facade.createSchoolClass(schoolClassRqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(schoolClassRespDto);
+    public SchoolClassRespDto createSchoolClass(@Valid @RequestBody SchoolClassRqDto schoolClassRqDto) throws ConstraintViolationExceptionCustom {
+        return facade.createSchoolClass(schoolClassRqDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteSchoolClass(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
-        Validator.notNull(id);
+    public void deleteSchoolClass(@PathVariable UUID id) throws ConstraintViolationExceptionCustom {
         facade.deleteSchoolClass(id);
-        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<SchoolClass> findSchoolClassById(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
-        Validator.notNull(id);
-        SchoolClass schoolClass = facade.findSchoolClassById(id);
-        return ResponseEntity.ok(schoolClass);
-    }
-
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}/pupils")
-    public ResponseEntity<List<User>> findAllPupilsOfClass(@PathVariable UUID id) throws SQLException, ConstraintViolationException {
-        Validator.notNull(id);
-        List<User> users = facade.findAllPupilsOfClass(id);
-        return ResponseEntity.ok(users);
+    public List<User> findAllPupilsOfClass(@PathVariable UUID id) throws ConstraintViolationExceptionCustom {
+        return facade.findAllPupilsOfClass(id);
     }
 }

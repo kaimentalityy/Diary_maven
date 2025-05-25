@@ -1,19 +1,13 @@
 package server.data.repository;
 
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
-import server.db.ConnectionPool;
 import server.data.entity.Subject;
-import server.utils.exception.internalerror.DatabaseOperationException;
+import server.db.ConnectionPool;
+import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
+import server.utils.exception.notfound.SubjectCustomNotFoundException;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.sql.*;
+import java.util.*;
 
 @Repository
 public class SubjectRepository {
@@ -24,36 +18,32 @@ public class SubjectRepository {
         this.connectionPool = connectionPool;
     }
 
-    public Subject save(Subject subject) {
+    public Subject save(Subject subject) throws SQLException {
         insertSubject(subject);
         return subject;
     }
 
-    public void insertSubject(Subject subject) {
+    public void insertSubject(Subject subject) throws SQLException {
         String query = "INSERT INTO subject (id, name) VALUES (?, ?)";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement statement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement statement = connection.prepareStatement(query)) {
 
             statement.setObject(1, subject.getId());
             statement.setString(2, subject.getName());
 
             int rowsInserted = statement.executeUpdate();
             if (rowsInserted == 0) {
-                throw new DatabaseOperationException("Failed to insert subject");
+                throw new DatabaseOperationExceptionCustom("Failed to insert subject");
             }
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in inserting subject", e);
         }
     }
 
-    public Optional<Subject> findById(UUID id) {
+    public Optional<Subject> findById(UUID id) throws SQLException {
         String query = "SELECT * FROM subject WHERE id = ?";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, id);
             ResultSet resultSet = preparedStatement.executeQuery();
@@ -67,45 +57,37 @@ public class SubjectRepository {
             }
 
             return Optional.empty();
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in fetching subject by ID", e);
         }
     }
 
-    public Optional<Subject> findByName(String name) {
+    public Optional<Subject> findByName(String name) throws SQLException {
         String query = "SELECT * FROM subject WHERE name = ?";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            preparedStatement.setObject(1, name);
+            preparedStatement.setString(1, name);
+            ResultSet resultSet = preparedStatement.executeQuery();
 
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    Subject subject = new Subject();
-                    subject.setId(UUID.fromString(resultSet.getString("id")));
-                    subject.setName(resultSet.getString("name"));
+            if (resultSet.next()) {
+                Subject subject = new Subject();
+                subject.setId(UUID.fromString(resultSet.getString("id")));
+                subject.setName(resultSet.getString("name"));
 
-                    return Optional.of(subject);
-                }
+                return Optional.of(subject);
             }
 
             return Optional.empty();
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in fetching subject by name", e);
         }
     }
 
-    public List<Subject> findAllSubjects() {
+    public List<Subject> findAllSubjects() throws SQLException {
         String query = "SELECT * FROM subject";
         List<Subject> subjects = new ArrayList<>();
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
-
-            ResultSet resultSet = preparedStatement.executeQuery();
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query);
+             ResultSet resultSet = preparedStatement.executeQuery()) {
 
             while (resultSet.next()) {
                 Subject subject = new Subject();
@@ -113,47 +95,39 @@ public class SubjectRepository {
                 subject.setName(resultSet.getString("name"));
                 subjects.add(subject);
             }
+
             return subjects;
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in fetching all subjects", e);
         }
     }
 
-    public void deleteById(UUID id) {
+    public void deleteById(UUID id) throws SQLException {
         String query = "DELETE FROM subject WHERE id = ?";
 
-        try {
-            Connection connection = connectionPool.connectToDataBase();
-            PreparedStatement preparedStatement = connection.prepareStatement(query);
+        try (Connection connection = connectionPool.connectToDataBase();
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
             preparedStatement.setObject(1, id);
             int rowsDeleted = preparedStatement.executeUpdate();
 
             if (rowsDeleted == 0) {
-                throw new DatabaseOperationException("Failed to delete subject");
+                throw new DatabaseOperationExceptionCustom("Failed to delete subject");
             }
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in deleting subject", e);
         }
     }
 
-    public boolean doesSubjectExist(UUID id) {
+    public boolean doesSubjectExist(UUID id) throws SQLException {
         String query = "SELECT COUNT(*) FROM subject WHERE id <> ? AND name = ?";
 
+        Subject subject = findById(id).orElseThrow(() -> new SubjectCustomNotFoundException("Subject with id " + id + " does not exist"));
+
         try (Connection connection = connectionPool.connectToDataBase();
-        PreparedStatement preparedStatement = connection.prepareStatement(query)){
+             PreparedStatement preparedStatement = connection.prepareStatement(query)) {
 
-            Subject subject = findById(id).orElseThrow(() -> new DatabaseOperationException("Subject with id " + id + " does not exist"));
-
-            preparedStatement.setObject(1, subject.getName());
+            preparedStatement.setObject(1, id);
+            preparedStatement.setString(2, subject.getName());
 
             ResultSet resultSet = preparedStatement.executeQuery();
-            if (resultSet.next()) {
-                return resultSet.getInt(1) > 0;
-            }
-            return false;
-        } catch (SQLException e) {
-            throw new DatabaseOperationException("Error in fetching subject by ID", e);
+            return resultSet.next() && resultSet.getInt(1) > 0;
         }
     }
 }

@@ -3,6 +3,7 @@ package server.business.mapper;
 import org.springframework.stereotype.Component;
 import server.data.entity.Grades;
 import server.presentation.dto.request.GradeRqDto;
+import server.presentation.dto.request.UpdateGradeRqDto;
 import server.presentation.dto.response.ErrorDto;
 import server.presentation.dto.response.GradeRespDto;
 
@@ -20,6 +21,15 @@ public class GradesMapper {
         grades.setPupilId(gradeRqDto.pupil_id());
         grades.setLessonId(gradeRqDto.lesson_id());
         grades.setGrade(gradeRqDto.grade());
+        return grades;
+    }
+
+    public Grades toGradeForUpdate(UpdateGradeRqDto updateGradeRqDto) {
+        Grades grades = new Grades();
+        grades.setId(updateGradeRqDto.id());
+        grades.setPupilId(updateGradeRqDto.pupil_id());
+        grades.setLessonId(updateGradeRqDto.lesson_id());
+        grades.setGrade(updateGradeRqDto.grade());
         return grades;
     }
 }

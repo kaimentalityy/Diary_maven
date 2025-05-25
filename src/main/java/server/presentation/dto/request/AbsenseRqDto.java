@@ -1,7 +1,25 @@
 package server.presentation.dto.request;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PastOrPresent;
+
 import java.sql.Date;
 import java.util.UUID;
 
-public record AbsenseRqDto(UUID lesson_id, UUID pupil_id, Boolean is_absent, Date date) {
-}
+public record AbsenseRqDto(
+
+        @NotNull
+        UUID lesson_id,
+
+        @NotNull
+        UUID pupil_id,
+
+        @NotNull
+        Boolean is_absent,
+
+        @NotNull
+        @PastOrPresent
+        Date date
+
+) {}
+

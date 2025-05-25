@@ -1,14 +1,15 @@
 package server.presentation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Grades;
 import server.presentation.dto.request.GradeRqDto;
+import server.presentation.dto.request.UpdateGradeRqDto;
+import server.presentation.dto.request.UpdateTeacherRqDto;
 import server.presentation.dto.response.GradeRespDto;
-import server.utils.Validator;
 
 import java.util.List;
 import java.util.UUID;
@@ -20,48 +21,34 @@ public class GradesController {
 
     private final MainFacade facade;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<GradeRespDto> giveGrade(@RequestBody GradeRqDto gradeRqDto) {
-        Validator.notNull(gradeRqDto);
-        GradeRespDto response = facade.giveGrade(gradeRqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    public GradeRespDto giveGrade(@Valid @RequestBody GradeRqDto gradeRqDto) {
+        return facade.giveGrade(gradeRqDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> removeGrade(@PathVariable UUID id) {
-        Validator.notNull(id);
+    public void removeGrade(@PathVariable UUID id) {
         facade.removeGrade(id);
-        return ResponseEntity.noContent().build();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateGrade(@PathVariable UUID id) {
-        Validator.notNull(id);
-        facade.updateGrade(id);
-        return ResponseEntity.noContent().build();
+    public GradeRespDto updateGrade(@Valid @RequestBody UpdateGradeRqDto updateGradeRqDto) {
+        return facade.updateGrade(updateGradeRqDto);
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Grades> findGradeById(@PathVariable UUID id) {
-        Validator.notNull(id);
-        Grades grade = facade.findGradeById(id);
-        return ResponseEntity.ok(grade);
-    }
-
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pupil-grades")
-    public ResponseEntity<List<String>> findAllGradesOfPupil(@RequestParam UUID userId, @RequestParam UUID subjectId) {
-        Validator.notNull(userId);
-        Validator.notNull(subjectId);
-        List<String> grades = facade.findAllGradesOfPupil(userId, subjectId);
-        return ResponseEntity.ok(grades);
+    public List<String> findAllGradesOfPupil(@RequestParam UUID userId, @RequestParam UUID subjectId) {
+        return facade.findAllGradesOfPupil(userId, subjectId);
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/average-grade")
-    public ResponseEntity<Double> calculateAverageGrade(@RequestParam UUID userId, @RequestParam UUID subjectId) {
-        Validator.notNull(userId);
-        Validator.notNull(subjectId);
-        Double averageGrade = facade.calculateAverageGrade(userId, subjectId);
-        return ResponseEntity.ok(averageGrade);
+    public Double calculateAverageGrade(@RequestParam UUID userId, @RequestParam UUID subjectId) {
+        return facade.calculateAverageGrade(userId, subjectId);
     }
 }
 

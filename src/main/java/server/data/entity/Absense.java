@@ -12,5 +12,4 @@ public class Absense {
     private UUID pupilId;
     private Boolean isPresent;
     private Date date;
-
 }

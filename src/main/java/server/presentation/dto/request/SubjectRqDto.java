@@ -1,4 +1,12 @@
 package server.presentation.dto.request;
 
-public record SubjectRqDto (String name) {
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
+public record SubjectRqDto(
+
+        @Size
+        @NotBlank
+        String name
+) {
 }

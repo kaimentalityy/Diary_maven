@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.Lesson;
 import server.data.repository.LessonRepository;
+import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
+import server.utils.exception.notfound.LessonCustomNotFoundException;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -19,30 +21,56 @@ public class LessonService {
 
     public Lesson addLesson(Lesson lesson) {
         lesson.setId(UUID.randomUUID());
-        return lessonRepository.save(lesson);
+        try {
+            return lessonRepository.save(lesson);
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to add lesson");
+        }
     }
 
-    public Optional<Lesson> findByLessonId(UUID lessonId) {
-        return lessonRepository.findById(lessonId);
+    public Lesson findByLessonId(UUID lessonId) {
+        try {
+            return lessonRepository.findById(lessonId)
+                    .orElseThrow(() -> new LessonCustomNotFoundException("Lesson not found with ID: " + lessonId));
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to find lesson with ID: " + lessonId);
+        }
     }
 
     public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
-        return lessonRepository.findAllByDate(localDateTime);
+        try {
+            return lessonRepository.findAllByDate(localDateTime);
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to find lessons for date: " + localDateTime);
+        }
     }
 
     public void deleteLesson(UUID lessonId) {
-        lessonRepository.deleteById(lessonId);
+        try {
+            if (lessonRepository.doesLessonExist(lessonId)) {
+                lessonRepository.deleteById(lessonId);
+            } else {
+                throw new LessonCustomNotFoundException("Lesson not found with ID: " + lessonId);
+            }
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to delete lesson with ID: " + lessonId);
+        }
     }
 
     public Optional<Lesson> findByClassId(UUID classId) {
-        return lessonRepository.findByClassId(classId);
+        try {
+            return lessonRepository.findByClassId(classId);
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to find lesson by class ID: " + classId);
+        }
     }
 
     public List<Lesson> findBySubjectsId(UUID subjectId) {
-        return lessonRepository.findBySubjectId(subjectId);
-    }
-
-    public boolean doesLessonExist(UUID lessonId) {
-        return lessonRepository.doesLessonExist(lessonId);
+        try {
+            return lessonRepository.findBySubjectId(subjectId);
+        } catch (SQLException e) {
+            throw new DatabaseOperationExceptionCustom("Failed to find lessons by subject ID: " + subjectId);
+        }
     }
 }
+

@@ -2,19 +2,18 @@ package server.business.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
 import server.presentation.dto.request.*;
 import server.presentation.dto.response.*;
-import server.utils.exception.internalerror.DatabaseOperationException;
+import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
+import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
+import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 import server.utils.exception.notfound.*;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -39,23 +38,21 @@ public class MainFacade {
     private final SchoolClassMapper schoolClassMapper;
     private final WeekScheduleMapper weekScheduleMapper;
 
-    public CreateUserRespDto createUser(CreateUserRqDto createUserRqDto) {
+    public UserRespDto createUser(CreateUserRqDto createUserRqDto) {
         User user = userMapper.toUser(createUserRqDto);
 
-        if (doesUserExist(user.getId())) {
-            user = userService.save(user);
+        if (isClassOverCapacity(findSchoolClassById(createUserRqDto.classId()))) {
+            throw new ConstraintViolationExceptionCustom("Class is over capacity");
         }
+        user = userService.save(user);
 
-        return userMapper.toCreateUserRespDto(user);
+        return userMapper.toUserRespDto(user);
     }
 
     public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
         Absense absense = absenseMapper.toAttendance(absenseRqDto);
 
-        if (doesAbsenseExist(absense.getId())) {
-            absense = absenseService.insertAbsence(absense);
-        }
-
+        absense = absenseService.insertAbsence(absense);
 
         return absenseMapper.toAttendanceRespDto(absense);
     }
@@ -63,9 +60,7 @@ public class MainFacade {
     public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
         WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto);
 
-        if (doesWeekScheduleExist(weekSchedule.getId())) {
-            weekSchedule = weekScheduleService.insert(weekSchedule);
-        }
+        weekSchedule = weekScheduleService.insert(weekSchedule);
 
         return weekScheduleMapper.toWeekScheduleRespDto(weekSchedule);
     }
@@ -73,9 +68,7 @@ public class MainFacade {
     public GradeRespDto giveGrade(GradeRqDto gradeRqDto) {
         Grades grades = gradesMapper.toGrade(gradeRqDto);
 
-        if (doesGradesExist(grades.getId())) {
-            grades = gradesService.giveGrade(grades);
-        }
+        grades = gradesService.giveGrade(grades);
 
         return gradesMapper.toGradeRespDto(grades);
     }
@@ -83,9 +76,7 @@ public class MainFacade {
     public LessonRespDto assignLesson(LessonRqDto lessonRqDto) {
         Lesson lesson = lessonMapper.toLesson(lessonRqDto);
 
-        if (doesLessonExist(lesson.getId())) {
-            lesson = lessonService.addLesson(lesson);
-        }
+        lesson = lessonService.addLesson(lesson);
 
         return lessonMapper.toLessonRespDto(lesson);
     }
@@ -93,63 +84,90 @@ public class MainFacade {
     public SubjectRespDto createSubject(SubjectRqDto subjectRqDto) {
         Subject subject = subjectMapper.toSubject(subjectRqDto);
 
-        if (doesSubjectExist(subject.getId())) {
-            subject = subjectService.createSubject(subject);
+        subject = subjectService.createSubject(subject);
 
-        }
         return subjectMapper.toSubjectRespDto(subject);
     }
 
     public SchoolClassRespDto createSchoolClass(SchoolClassRqDto schoolClassRqDto) {
         SchoolClass schoolClass = schoolClassMapper.toSchoolClass(schoolClassRqDto);
 
-        if (doesSchoolClassExist(schoolClass.getId())) {
-            schoolClass = schoolClassService.createClass(schoolClass);
+        schoolClass = schoolClassService.createClass(schoolClass);
 
-        }
         return schoolClassMapper.toSchoolClassRespDto(schoolClass);
     }
 
     public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto) {
         TeacherOfSubject teacherOfSubject = teacherMapper.toTeacher(teacherRqDto);
 
-        if (doesTeacherExist(teacherOfSubject.getId())) {
-            teacherOfSubject = teacherOfSubjectService.addTeacher(teacherOfSubject);
+        teacherOfSubject = teacherOfSubjectService.addTeacher(teacherOfSubject);
 
-        }
         return teacherMapper.toTeacherRespDto(teacherOfSubject);
     }
 
+    public void assignPupilToClass(UUID userId, UUID classId) {
+        User user = findUserById(userId);
+        SchoolClass schoolClass = findSchoolClassById(classId);
+
+        int minAge = getMinimumAgeForClass(classId);
+        if (user.getAge() < minAge) {
+            throw new ConstraintViolationExceptionCustom("Pupil must be at least " + minAge + " years old.");
+        }
+        if (isClassOverCapacity(schoolClass)) {
+            throw new ConstraintViolationExceptionCustom("Class is over capacity");
+        }
+
+        updateClassOfStudent(classId, userId);
+    }
+
+    public boolean isClassOverCapacity(SchoolClass schoolClass) {
+        return findAllPupilsOfClass(schoolClass.getId()).size() > schoolClass.getMaxCapacity();
+    }
+
+    public void updateClassOfStudent(UUID classId, UUID studentId) {
+        userService.updateClassOfStudent(classId, studentId);
+    }
+
+    public Integer getMinimumAgeForClass(UUID classId) {
+        String classNumber = findSchoolClassById(classId).getNumber();
+        try {
+            int number = Integer.parseInt(classNumber);
+            return 5 + number;
+        } catch (NumberFormatException e) {
+            throw new InvalidNumberExceptionCustom(classNumber);
+        }
+    }
+
     public User findUserById(UUID id) {
-        return userService.findUserByID(id).orElseThrow(() -> new UserNotFoundException(id));
+        return userService.findUserByID(id);
     }
 
     public Grades findGradeById(UUID id) {
-        return gradesService.findGradeById(id).orElseThrow(() -> new GradeNotFoundException(id));
+        return gradesService.findGradeById(id);
     }
 
     public SchoolClass findSchoolClassById(UUID id) {
-        return schoolClassService.findClassById(id).orElseThrow(() -> new SchoolClassNotFoundException(id));
+        return schoolClassService.findClassById(id);
     }
 
     public Lesson findLessonById(UUID id) {
-        return lessonService.findByLessonId(id).orElseThrow(() -> new LessonNotFoundException(id));
+        return lessonService.findByLessonId(id);
     }
 
     public WeekSchedule findWeekScheduleById(UUID id) {
-        return weekScheduleService.findLessonById(id).orElseThrow(() -> new WeekScheduleNotFoundException(id));
+        return weekScheduleService.findLessonById(id);
     }
 
     public Subject findSubjectById(UUID id) {
-        return subjectService.findSubjectById(id).orElseThrow(() -> new SubjectNotFoundException(id));
+        return subjectService.findSubjectById(id);
     }
 
     public TeacherOfSubject findTeacherById(UUID id) {
-        return teacherOfSubjectService.findById(id).orElseThrow(() -> new TeacherNotFoundException(id));
+        return teacherOfSubjectService.findById(id);
     }
 
     public Subject findSubjectByName(String name) {
-        return subjectService.findSubjectByName(name).orElseThrow(() -> new SubjectNotFoundException(name));
+        return subjectService.findSubjectByName(name);
     }
 
     public List<Lesson> findBySubjectsId(UUID subjectId) {
@@ -172,12 +190,12 @@ public class MainFacade {
         return userService.findPupilsOfClass(id);
     }
 
-    public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) throws SQLException {
+    public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
         return lessonService.findAllLessonsByDate(localDateTime);
     }
 
     public Absense findAttendance(UUID id) {
-        return absenseService.findAttendanceById(id).orElseThrow(() -> new AbsenseNotFoundException(id));
+        return absenseService.findAttendanceById(id);
     }
 
     public Double calculateAverageGrade(UUID id, UUID subjectId) {
@@ -189,122 +207,78 @@ public class MainFacade {
         double attendance = absenseService.calculateAttendance(id);
 
         if (totalHours == 0) {
-            throw new DatabaseOperationException("No hours recorded for class: " + classId);
+            throw new DatabaseOperationExceptionCustom("No hours recorded for class: " + classId);
         }
 
         return (attendance / totalHours) * 100;
     }
 
     public User findUserByLogin(String login) {
-        return userService.findUserByLogin(login).orElseThrow(() -> new UserNotFoundException(login));
+        return userService.findUserByLogin(login);
     }
 
     public DayOfWeek findDayOfWeekById(int value) {
-        return DayOfWeek.getByValue(value).orElseThrow(() -> new DayOfWeekNotFoundException(value));
+        return DayOfWeek.getByValue(value).orElseThrow(() -> new DayOfWeekCustomNotFoundException(value));
     }
 
-    public void updateUser(UUID id) {
-        if (userService.findUserByID(id).isPresent()) {
-            userService.update(id);
-        }
+    public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
+
+        Absense absense = absenseService.updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto));
+
+        return absenseMapper.toAttendanceRespDto(absense);
     }
 
-    public void updateAttendance(UUID id, Boolean isAbsent) {
-        if (absenseService.findAttendanceById(id).isPresent()) {
-            absenseService.updateAttendance(id, isAbsent);
-        }
+    public UserRespDto updateUser(UpdateUserRqDto updateUserRqDto) {
+
+        User updatedUser = userService.update(userMapper.toUserForUpdate(updateUserRqDto));
+
+        return userMapper.toUserRespDto(updatedUser);
     }
 
-    public void updateTeacher(UUID id) {
-        if (teacherOfSubjectService.findById(id).isPresent()) {
-            teacherOfSubjectService.updateTeacher(id);
-        }
+
+    public GradeRespDto updateGrade(UpdateGradeRqDto updateGradeRqDto) {
+
+        Grades updatedGrade = gradesService.updateGrade(gradesMapper.toGradeForUpdate(updateGradeRqDto));
+
+        return gradesMapper.toGradeRespDto(updatedGrade);
     }
 
-    public void updateGrade(UUID id) {
-        if (gradesService.findGradeById(id).isPresent()) {
-            gradesService.updateGrade(id);
-        }
+    public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
+
+        TeacherOfSubject updatedTeacher = teacherOfSubjectService.updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto));
+
+        return teacherMapper.toTeacherRespDto(updatedTeacher);
     }
 
     public void deleteUser(UUID id) {
-        if (userService.findUserByID(id).isPresent()) {
-            userService.delete(id);
-        }
+        userService.delete(id);
     }
 
     public void removeGrade(UUID id) {
-        if (gradesService.findGradeById(id).isPresent()) {
-            gradesService.removeGrade(id);
-        }
+        gradesService.removeGrade(id);
     }
 
     public void deleteSchoolClass(UUID id) {
-        if (schoolClassService.findClassById(id).isPresent()) {
-            schoolClassService.deleteClass(id);
-        }
+        schoolClassService.deleteClass(id);
     }
 
     public void removeLesson(UUID id) {
-        if (lessonService.findByLessonId(id).isPresent()) {
-            lessonService.deleteLesson(id);
-        }
+        lessonService.deleteLesson(id);
     }
 
     public void removeLessonFromSchedule(WeekSchedule weekSchedule) {
-        if (lessonService.findByLessonId(weekSchedule.getLessonId()).isPresent()) {
-            weekScheduleService.delete(weekSchedule);
-        }
+        weekScheduleService.delete(weekSchedule);
     }
 
     public void deleteSubject(UUID id) {
-        if (subjectService.findSubjectById(id).isPresent()) {
-            subjectService.deleteSubject(id);
-        }
+        subjectService.deleteSubject(id);
     }
 
     public void deleteTeacher(UUID id) {
-        if (teacherOfSubjectService.findById(id).isPresent()) {
-            teacherOfSubjectService.deleteTeacher(id);
-        }
+        teacherOfSubjectService.deleteTeacher(id);
     }
 
     public Boolean checkAttendance(UUID id) {
-        if (absenseService.findAttendanceById(id).isPresent()) {
-            return absenseService.checkAttendance(id);
-        }
-        return false;
-    }
-
-    public boolean doesUserExist(UUID id) {
-        return userService.doesUserExist(id);
-    }
-
-    public boolean doesAbsenseExist(UUID id) {
-        return absenseService.doesAttendanceExist(id);
-    }
-
-    public boolean doesGradesExist(UUID id) {
-        return gradesService.doesGradesExist(id);
-    }
-
-    public boolean doesLessonExist(UUID id) {
-        return lessonService.doesLessonExist(id);
-    }
-
-    public boolean doesSchoolClassExist(UUID id) {
-        return schoolClassService.doesClassExist(id);
-    }
-
-    public boolean doesSubjectExist(UUID id) {
-        return subjectService.doesSubjectExist(id);
-    }
-
-    public boolean doesTeacherExist(UUID id) {
-        return teacherOfSubjectService.doesTeacherExist(id);
-    }
-
-    public boolean doesWeekScheduleExist(UUID id) {
-        return weekScheduleService.doesWeekScheduleExist(id);
+        return absenseService.checkAttendance(id);
     }
 }

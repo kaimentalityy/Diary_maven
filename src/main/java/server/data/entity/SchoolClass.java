@@ -11,5 +11,6 @@ public class SchoolClass {
     private String letter;
     private String number;
     private UUID teacherId;
+    private Integer maxCapacity = 30;
 
 }

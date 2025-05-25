@@ -1,17 +1,15 @@
 package server.presentation.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.data.entity.TeacherOfSubject;
 import server.presentation.dto.request.TeacherRqDto;
+import server.presentation.dto.request.UpdateTeacherRqDto;
 import server.presentation.dto.response.TeacherRespDto;
-import server.utils.Validator;
-import server.utils.exception.badrequest.ConstraintViolationException;
+import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
 
-import java.sql.SQLException;
 import java.util.UUID;
 
 @RestController
@@ -21,31 +19,21 @@ public class TeacherController {
 
     private final MainFacade facade;
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public ResponseEntity<TeacherRespDto> addTeacher(@RequestBody TeacherRqDto teacherRqDto) throws ConstraintViolationException {
-        Validator.notNull(teacherRqDto);
-        TeacherRespDto teacherRespDto = facade.addTeacher(teacherRqDto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(teacherRespDto);
+    public TeacherRespDto addTeacher(@Valid @RequestBody TeacherRqDto teacherRqDto) {
+        return facade.addTeacher(teacherRqDto);
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteTeacher(@PathVariable UUID id) throws ConstraintViolationException {
-        Validator.notNull(id);
+    public void deleteTeacher(@PathVariable UUID id) throws ConstraintViolationExceptionCustom {
         facade.deleteTeacher(id);
-        return ResponseEntity.noContent().build();
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
-    public ResponseEntity<Void> updateTeacher(@PathVariable UUID id) throws ConstraintViolationException {
-        Validator.notNull(id);
-        facade.updateTeacher(id);
-        return ResponseEntity.noContent().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<TeacherOfSubject> getTeacherById(@PathVariable UUID id) throws ConstraintViolationException {
-        Validator.notNull(id);
-        facade.findTeacherById(id);
-        return ResponseEntity.noContent().build();
+    public TeacherRespDto updateTeacher(@Valid @RequestBody UpdateTeacherRqDto updateTeacherRqDto) {
+        return facade.updateTeacher(updateTeacherRqDto);
     }
 }
