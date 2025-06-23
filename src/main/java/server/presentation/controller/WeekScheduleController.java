@@ -29,8 +29,7 @@ public class WeekScheduleController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void removeLessonFromSchedule(@PathVariable UUID id) {
-        WeekSchedule schedule = facade.findWeekScheduleById(id);
-        facade.removeLessonFromSchedule(schedule);
+        facade.removeLessonFromSchedule(id);
     }
 
     @ResponseStatus(HttpStatus.OK)

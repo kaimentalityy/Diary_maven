@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.data.entity.User;
 import server.presentation.dto.request.CreateUserRqDto;
 import server.presentation.dto.request.UpdateUserRqDto;
 import server.presentation.dto.response.UserRespDto;
@@ -20,7 +19,7 @@ public class UserController {
     private final MainFacade facade;
 
     @ResponseStatus(HttpStatus.CREATED)
-    @PostMapping
+    @PostMapping("create")
     public UserRespDto createAccount(@Valid @RequestBody CreateUserRqDto createUserRqDto) {
         return facade.createUser(createUserRqDto);
     }
@@ -42,5 +41,6 @@ public class UserController {
     public UserRespDto updateUser(@Valid @RequestBody UpdateUserRqDto updateUserRqDto) {
         return facade.updateUser(updateUserRqDto);
     }
+
 }
 

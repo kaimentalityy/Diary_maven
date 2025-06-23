@@ -4,14 +4,10 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record UpdateGradeRqDto(
+public record AttendancePercentageRequest(
+        @NotNull
+        UUID userId,
 
         @NotNull
-        UUID id,
-
-        @NotNull
-        String column,
-
-        @NotNull
-        String value
+        UUID classId
 ) {}

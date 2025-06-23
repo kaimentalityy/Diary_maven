@@ -1,35 +1,17 @@
 package server.business.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import server.data.entity.Grades;
 import server.presentation.dto.request.GradeRqDto;
 import server.presentation.dto.request.UpdateGradeRqDto;
-import server.presentation.dto.response.ErrorDto;
 import server.presentation.dto.response.GradeRespDto;
 
-import java.util.Optional;
+@Mapper(componentModel = "spring")
+public interface GradesMapper {
 
-@Component
-public class GradesMapper {
+    GradeRespDto toGradeRespDto(Grades grades);
 
-    public GradeRespDto toGradeRespDto(Grades grades) {
-        return new GradeRespDto(grades.getId(), grades.getPupilId(), grades.getLessonId(), grades.getGrade());
-    }
+    Grades toGrade(GradeRqDto gradeRqDto);
 
-    public Grades toGrade(GradeRqDto gradeRqDto) {
-        Grades grades = new Grades();
-        grades.setPupilId(gradeRqDto.pupil_id());
-        grades.setLessonId(gradeRqDto.lesson_id());
-        grades.setGrade(gradeRqDto.grade());
-        return grades;
-    }
-
-    public Grades toGradeForUpdate(UpdateGradeRqDto updateGradeRqDto) {
-        Grades grades = new Grades();
-        grades.setId(updateGradeRqDto.id());
-        grades.setPupilId(updateGradeRqDto.pupil_id());
-        grades.setLessonId(updateGradeRqDto.lesson_id());
-        grades.setGrade(updateGradeRqDto.grade());
-        return grades;
-    }
+    Grades toGradeForUpdate(UpdateGradeRqDto updateGradeRqDto);
 }

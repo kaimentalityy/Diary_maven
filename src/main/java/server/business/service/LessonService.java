@@ -20,21 +20,12 @@ public class LessonService {
     private final LessonRepository lessonRepository;
 
     public Lesson addLesson(Lesson lesson) {
-        lesson.setId(UUID.randomUUID());
-        try {
-            return lessonRepository.save(lesson);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to add lesson");
-        }
+        return lessonRepository.save(lesson);
     }
 
-    public Lesson findByLessonId(UUID lessonId) {
-        try {
-            return lessonRepository.findById(lessonId)
-                    .orElseThrow(() -> new LessonCustomNotFoundException("Lesson not found with ID: " + lessonId));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find lesson with ID: " + lessonId);
-        }
+    public Lesson findById(UUID lessonId) {
+        return lessonRepository.findById(lessonId)
+                .orElseThrow(() -> new LessonCustomNotFoundException("Lesson not found with ID: " + lessonId));
     }
 
     public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
@@ -46,23 +37,15 @@ public class LessonService {
     }
 
     public void deleteLesson(UUID lessonId) {
-        try {
-            if (lessonRepository.doesLessonExist(lessonId)) {
-                lessonRepository.deleteById(lessonId);
-            } else {
-                throw new LessonCustomNotFoundException("Lesson not found with ID: " + lessonId);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to delete lesson with ID: " + lessonId);
+        if (findById(lessonId) == null) {
+            throw new LessonCustomNotFoundException(lessonId);
+        } else {
+            lessonRepository.deleteById(lessonId);
         }
     }
 
     public Optional<Lesson> findByClassId(UUID classId) {
-        try {
-            return lessonRepository.findByClassId(classId);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find lesson by class ID: " + classId);
-        }
+        return lessonRepository.findByClassId(classId);
     }
 
     public List<Lesson> findBySubjectsId(UUID subjectId) {

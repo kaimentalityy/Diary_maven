@@ -8,6 +8,7 @@ import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 import server.utils.exception.notfound.AbsenseCustomNotFoundException;
 
 import java.sql.SQLException;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -16,53 +17,42 @@ public class AbsenseService {
     private final AbsenseRepository absenseRepository;
 
     public Absense insertAbsence(Absense absense) {
-        absense.setId(UUID.randomUUID());
-        try {
-            return absenseRepository.insert(absense);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to insert attendance");
-        }
+        absenseRepository.save(absense);
+        return absense;
     }
 
     public Absense findAttendanceById(UUID id) {
-        try {
-            return absenseRepository.findAttendanceById(id)
-                    .orElseThrow(() -> new AbsenseCustomNotFoundException("Absense not found with ID: " + id));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find attendance with ID: " + id);
-        }
+        return absenseRepository.findById(id).orElseThrow(()->new AbsenseCustomNotFoundException(id));
     }
 
     public Absense updateAttendance(Absense absense) {
-        try {
-            if (absenseRepository.doesAbsenceExist(absense.getId())) {
-                return absenseRepository.update(absense);
-            } else {
-                throw new AbsenseCustomNotFoundException("Absense not found with ID: " + absense.getId());
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to update attendance for ID: " + absense.getId());
+        if (absenseRepository.existsDuplicateAbsence(absense.getLessonId(), absense.getPupilId(), absense.getIsPresent(), absense.getDate(), absense.getId())) {
+            return absenseRepository.updateAttendance(absense.getId(), absense.getIsPresent());
+        } else {
+            throw new AbsenseCustomNotFoundException("Absense not found with ID: " + absense.getId());
         }
     }
 
-    public boolean checkAttendance(UUID id) {
-        try {
-            if (absenseRepository.doesAbsenceExist(id)) {
-                return absenseRepository.checkAttendance(id);
-            } else {
-                throw new AbsenseCustomNotFoundException("Absense not found with ID: " + id);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to check attendance for ID: " + id);
-        }
+    public Absense checkAttendance(UUID id) {
+        return absenseRepository.findById(id).orElseThrow(() -> new AbsenseCustomNotFoundException("No attendance record found with ID: " + id));
     }
 
-    public Double calculateAttendance(UUID id) {
-        try {
-            return absenseRepository.calculateAttendance(id);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to calculate attendance for user: " + id);
+    public double calculateAttendance(UUID pupilId) {
+        List<Absense> attendanceList = absenseRepository.findByPupilId(pupilId);
+
+        int totalDays = attendanceList.size();
+        int daysPresent = 0;
+
+        for (Absense absense : attendanceList) {
+            Boolean isPresent = absense.getIsPresent();
+            if (isPresent != null && isPresent) {
+                daysPresent++;
+            }
         }
+
+        return totalDays > 0 ? ((double) daysPresent / totalDays) * 100 : 0.0;
     }
+
+
+
 }
-

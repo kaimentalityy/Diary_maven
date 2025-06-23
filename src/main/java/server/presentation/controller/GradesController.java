@@ -5,10 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.data.entity.Grades;
 import server.presentation.dto.request.GradeRqDto;
 import server.presentation.dto.request.UpdateGradeRqDto;
-import server.presentation.dto.request.UpdateTeacherRqDto;
 import server.presentation.dto.response.GradeRespDto;
 
 import java.util.List;

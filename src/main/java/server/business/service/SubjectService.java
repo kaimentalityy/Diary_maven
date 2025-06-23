@@ -18,41 +18,24 @@ public class SubjectService {
     private final SubjectRepository subjectRepository;
 
     public Subject createSubject(Subject subject) {
-        subject.setId(UUID.randomUUID());
-        try {
-            return subjectRepository.save(subject);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to create subject");
-        }
+        return subjectRepository.save(subject);
     }
 
     public void deleteSubject(UUID id) {
-        try {
-            if (subjectRepository.doesSubjectExist(id)) {
-                subjectRepository.deleteById(id);
-            } else {
-                throw new SubjectCustomNotFoundException("Subject not found with ID: " + id);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to delete subject with ID: " + id);
+        if (findById(id) == null) {
+            throw new SubjectCustomNotFoundException("Subject not found with ID: " + id);
+        } else {
+            subjectRepository.deleteById(id);
         }
     }
 
-    public Subject findSubjectById(UUID id) {
-        try {
-            return subjectRepository.findById(id)
-                    .orElseThrow(() -> new SubjectCustomNotFoundException("Subject not found with ID: " + id));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find subject with ID: " + id);
-        }
+    public Subject findById(UUID id) {
+        return subjectRepository.findById(id)
+                .orElseThrow(() -> new SubjectCustomNotFoundException("Subject not found with ID: " + id));
     }
 
     public List<Subject> findAllSubjects() {
-        try {
-            return subjectRepository.findAllSubjects();
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to fetch all subjects");
-        }
+        return subjectRepository.findAll();
     }
 
     public Subject findSubjectByName(String name) {

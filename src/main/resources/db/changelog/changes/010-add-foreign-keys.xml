@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="010" author="kai">
+        <addForeignKeyConstraint baseTableName="users" baseColumnNames="role_id"
+                                 constraintName="fk_users_role" referencedTableName="role"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="users" baseColumnNames="class_id"
+                                 constraintName="fk_users_class" referencedTableName="class"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="class" baseColumnNames="teacher_id"
+                                 constraintName="fk_class_teacher" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="teacher_of_subject" baseColumnNames="subject_id"
+                                 constraintName="fk_tos_subject" referencedTableName="subject"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="teacher_of_subject" baseColumnNames="teacher_id"
+                                 constraintName="fk_tos_teacher" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="class_id"
+                                 constraintName="fk_lesson_class" referencedTableName="class"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="teacher_of_subject_id"
+                                 constraintName="fk_lesson_tos" referencedTableName="teacher_of_subject"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="subject_id"
+                                 constraintName="fk_lesson_subject" referencedTableName="subject"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="attendance" baseColumnNames="lesson_id"
+                                 constraintName="fk_attendance_lesson" referencedTableName="lesson"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="attendance" baseColumnNames="pupil_id"
+                                 constraintName="fk_attendance_pupil" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="grades" baseColumnNames="pupil_id"
+                                 constraintName="fk_grades_pupil" referencedTableName="users"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="grades" baseColumnNames="lesson_id"
+                                 constraintName="fk_grades_lesson" referencedTableName="lesson"
+                                 referencedColumnNames="id"/>
+
+        <addForeignKeyConstraint baseTableName="week_schedule" baseColumnNames="lesson_id"
+                                 constraintName="fk_ws_lesson" referencedTableName="lesson"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+
+</databaseChangeLog>

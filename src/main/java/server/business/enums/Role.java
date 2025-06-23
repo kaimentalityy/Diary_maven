@@ -1,4 +1,4 @@
-package server.data.entity;
+package server.business.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -13,14 +13,5 @@ public enum Role {
     TEACHER(UUID.fromString("d65e91f2-68bd-4578-93cf-e0bc3ddd0185"));
 
     private final UUID uuid;
-
-    public static Role fromRole(UUID uuid) {
-        for (Role role : Role.values()) {
-            if (role.getUuid().equals(uuid)) {
-                return role;
-            }
-        }
-        throw new IllegalArgumentException("Invalid UUID: " + uuid);
-    }
 }
 

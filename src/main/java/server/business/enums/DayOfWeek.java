@@ -1,4 +1,4 @@
-package server.data.entity;
+package server.business.enums;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

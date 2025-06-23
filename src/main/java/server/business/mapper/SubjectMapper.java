@@ -1,23 +1,14 @@
 package server.business.mapper;
 
-import org.springframework.stereotype.Component;
+import org.mapstruct.Mapper;
 import server.data.entity.Subject;
 import server.presentation.dto.request.SubjectRqDto;
-import server.presentation.dto.response.ErrorDto;
 import server.presentation.dto.response.SubjectRespDto;
 
-import java.util.Optional;
+@Mapper(componentModel = "spring")
+public interface SubjectMapper {
 
-@Component
-public class SubjectMapper {
+    SubjectRespDto toSubjectRespDto(Subject subject);
 
-    public SubjectRespDto toSubjectRespDto(Subject subject) {
-        return new SubjectRespDto(subject.getId(), subject.getName());
-    }
-
-    public Subject toSubject(SubjectRqDto subjectRqDto) {
-        Subject subject = new Subject();
-        subject.setName(subjectRqDto.name());
-        return subject;
-    }
+    Subject toSubject(SubjectRqDto subjectRqDto);
 }

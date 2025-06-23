@@ -4,14 +4,12 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record UpdateGradeRqDto(
+public record AssignPupilToClassRqDto (
 
         @NotNull
-        UUID id,
+        UUID pupilId,
 
         @NotNull
-        String column,
+        UUID classId
 
-        @NotNull
-        String value
 ) {}

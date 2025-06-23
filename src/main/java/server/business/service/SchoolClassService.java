@@ -17,32 +17,19 @@ public class SchoolClassService {
     private final SchoolClassRepository schoolClassRepository;
 
     public SchoolClass createClass(SchoolClass schoolClass) {
-        schoolClass.setId(UUID.randomUUID());
-        try {
-            return schoolClassRepository.save(schoolClass);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to create school class");
-        }
+        return schoolClassRepository.save(schoolClass);
     }
 
     public void deleteClass(UUID id) {
-        try {
-            if (schoolClassRepository.doesSchoolClassExist(id)) {
-                schoolClassRepository.deleteClass(id);
-            } else {
-                throw new SchoolClassCustomNotFoundException("Class not found with ID: " + id);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to delete school class with ID: " + id);
+        if (findClassById(id) == null) {
+            throw new SchoolClassCustomNotFoundException("Class not found with ID: " + id);
+        } else {
+            schoolClassRepository.deleteById(id);
         }
     }
 
     public SchoolClass findClassById(UUID id) {
-        try {
-            return schoolClassRepository.findClassById(id)
-                    .orElseThrow(() -> new SchoolClassCustomNotFoundException("Class not found with ID: " + id));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find school class with ID: " + id);
-        }
+        return schoolClassRepository.findById(id)
+                .orElseThrow(() -> new SchoolClassCustomNotFoundException("Class not found with ID: " + id));
     }
 }

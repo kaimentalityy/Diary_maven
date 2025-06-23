@@ -5,10 +5,11 @@ import org.springframework.stereotype.Service;
 import server.data.entity.Grades;
 import server.data.entity.Lesson;
 import server.data.repository.GradesRepository;
-import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
+import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
+import server.utils.exception.badrequest.InvalidRequestExceptionCustom;
+import server.utils.exception.conflict.GradeAlreadyExistsExceptionCustom;
 import server.utils.exception.notfound.GradeCustomNotFoundException;
 
-import java.sql.SQLException;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,61 +19,67 @@ public class GradesService {
     private final GradesRepository gradesRepository;
 
     public Grades giveGrade(Grades grades) {
-        grades.setId(UUID.randomUUID());
-        try {
-            return gradesRepository.saveGrade(grades);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to give grade to pupil: " + grades.getPupilId());
+        if (gradesRepository.doesGradesExist(grades.getId(), grades.getPupilId(), grades.getLessonId(), grades.getGrade())) {
+            throw new GradeAlreadyExistsExceptionCustom("Duplicate grade for pupil and lesson.");
         }
+        return gradesRepository.save(grades);
     }
 
     public Grades findGradeById(UUID id) {
-        try {
-            return gradesRepository.findGradeById(id)
-                    .orElseThrow(() -> new GradeCustomNotFoundException("Grade not found with ID: " + id));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find grade with ID: " + id);
-        }
+        return gradesRepository.findById(id).orElseThrow(() -> new GradeCustomNotFoundException(id));
     }
 
     public void removeGrade(UUID id) {
-        try {
-            if (gradesRepository.doesGradesExist(id)) {
-                gradesRepository.removeGrade(id);
-            } else {
-                throw new GradeCustomNotFoundException("Grade not found with ID: " + id);
-            }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to remove grade with ID: " + id);
+        if (findGradeById(id) == null) {
+            throw new GradeCustomNotFoundException(id);
+        } else {
+            gradesRepository.deleteById(id);
         }
     }
 
     public Double calculateAverageGrade(UUID pupilId, List<Lesson> lessons) {
-        try {
-            return gradesRepository.calculateAverageGradeOfSubject(pupilId, lessons);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to calculate average grade for pupil: " + pupilId);
-        }
-    }
+        List<String> grades = getAllGradesOfPupil(pupilId, lessons);
 
-    public Grades updateGrade(Grades grades) {
-        try {
-            if (gradesRepository.doesGradesExist(grades.getId())) {
-                 return gradesRepository.update(grades);
-            } else {
-                throw new GradeCustomNotFoundException("Grade not found with ID: " + grades.getId());
+        if (grades.isEmpty()) {
+            throw new IllegalStateException("No grades found for pupil " + pupilId);
+        }
+
+        double total = 0.0;
+
+        for (String grade : grades) {
+            try {
+                total += Double.parseDouble(grade);
+            } catch (NumberFormatException e) {
+                throw new InvalidNumberExceptionCustom("Invalid grade format: '" + grade + "' for pupil " + pupilId);
             }
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to update grade with ID: " + grades.getId());
         }
+
+        return total / grades.size();
     }
 
-    public List<String> getAllGradesOfPupil(UUID id, List<Lesson> lessons) {
-        try {
-            return gradesRepository.getAllGradesOfPupil(id, lessons);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to get grades for pupil: " + id);
+
+    public Grades updateGrade(UUID id, String column, String value) {
+        Grades grade = gradesRepository.findById(id)
+                .orElseThrow(() -> new GradeCustomNotFoundException("Grade not found: " + id));
+
+        switch (column) {
+            case "pupil_id" -> grade.setPupilId(UUID.fromString(value));
+            case "lesson_id" -> grade.setLessonId(UUID.fromString(value));
+            case "grade" -> grade.setGrade(value);
+            default -> throw new InvalidRequestExceptionCustom("Invalid column: " + column);
         }
+
+        return gradesRepository.save(grade);
     }
+
+    public List<String> getAllGradesOfPupil(UUID pupilId, List<Lesson> lessons) {
+        List<UUID> lessonIds = lessons.stream()
+                .map(Lesson::getId)
+                .toList();
+
+        return gradesRepository.getAllGradesOfPupil(pupilId, lessonIds);
+    }
+
 }
+
 

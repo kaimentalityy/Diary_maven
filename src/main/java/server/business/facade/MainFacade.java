@@ -2,6 +2,7 @@ package server.business.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.enums.DayOfWeek;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
@@ -12,6 +13,7 @@ import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
 import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 import server.utils.exception.notfound.*;
 
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -41,9 +43,6 @@ public class MainFacade {
     public UserRespDto createUser(CreateUserRqDto createUserRqDto) {
         User user = userMapper.toUser(createUserRqDto);
 
-        if (isClassOverCapacity(findSchoolClassById(createUserRqDto.classId()))) {
-            throw new ConstraintViolationExceptionCustom("Class is over capacity");
-        }
         user = userService.save(user);
 
         return userMapper.toUserRespDto(user);
@@ -60,7 +59,7 @@ public class MainFacade {
     public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
         WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto);
 
-        weekSchedule = weekScheduleService.insert(weekSchedule);
+        weekSchedule = weekScheduleService.insertLessonInSchedule(weekSchedule);
 
         return weekScheduleMapper.toWeekScheduleRespDto(weekSchedule);
     }
@@ -151,15 +150,11 @@ public class MainFacade {
     }
 
     public Lesson findLessonById(UUID id) {
-        return lessonService.findByLessonId(id);
-    }
-
-    public WeekSchedule findWeekScheduleById(UUID id) {
-        return weekScheduleService.findLessonById(id);
+        return lessonService.findById(id);
     }
 
     public Subject findSubjectById(UUID id) {
-        return subjectService.findSubjectById(id);
+        return subjectService.findById(id);
     }
 
     public TeacherOfSubject findTeacherById(UUID id) {
@@ -183,7 +178,7 @@ public class MainFacade {
     }
 
     public List<Lesson> findAllLessonsInADay(DayOfWeek dayOfWeek, UUID classId) {
-        return weekScheduleService.findAllLessonsInADay(dayOfWeek, classId);
+        return weekScheduleService.getAllLessonsInADay(dayOfWeek.getValue(), classId);
     }
 
     public List<User> findAllPupilsOfClass(UUID id) {
@@ -202,16 +197,19 @@ public class MainFacade {
         return gradesService.calculateAverageGrade(id, findBySubjectsId(subjectId));
     }
 
-    public double calculateAttendancePercent(UUID id, UUID classId) {
-        double totalHours = weekScheduleService.countTotalHours(classId);
-        double attendance = absenseService.calculateAttendance(id);
+    public AttendancePercentageResponse calculateAttendancePercent(AttendancePercentageRequest attendancePercentageRequest) {
+        double totalHours = weekScheduleService.countTotalHoursAWeek(attendancePercentageRequest.classId());
+        double attended = absenseService.calculateAttendance(attendancePercentageRequest.userId());
 
         if (totalHours == 0) {
-            throw new DatabaseOperationExceptionCustom("No hours recorded for class: " + classId);
+            throw new DatabaseOperationExceptionCustom("No hours recorded for class: " + attendancePercentageRequest.classId());
         }
 
-        return (attendance / totalHours) * 100;
+        double percentage = (attended / totalHours) * 100;
+        
+        return absenseMapper.toAttendancePercentageResponse(attendancePercentageRequest, percentage);
     }
+
 
     public User findUserByLogin(String login) {
         return userService.findUserByLogin(login);
@@ -235,13 +233,11 @@ public class MainFacade {
         return userMapper.toUserRespDto(updatedUser);
     }
 
-
-    public GradeRespDto updateGrade(UpdateGradeRqDto updateGradeRqDto) {
-
-        Grades updatedGrade = gradesService.updateGrade(gradesMapper.toGradeForUpdate(updateGradeRqDto));
-
+    public GradeRespDto updateGrade(UpdateGradeRqDto dto) {
+        Grades updatedGrade = gradesService.updateGrade(dto.id(), dto.column(),  dto.value());
         return gradesMapper.toGradeRespDto(updatedGrade);
     }
+
 
     public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
 
@@ -266,8 +262,8 @@ public class MainFacade {
         lessonService.deleteLesson(id);
     }
 
-    public void removeLessonFromSchedule(WeekSchedule weekSchedule) {
-        weekScheduleService.delete(weekSchedule);
+    public void removeLessonFromSchedule(UUID id) {
+        weekScheduleService.unscheduleLessonFromSchedule(id);
     }
 
     public void deleteSubject(UUID id) {
@@ -278,7 +274,9 @@ public class MainFacade {
         teacherOfSubjectService.deleteTeacher(id);
     }
 
-    public Boolean checkAttendance(UUID id) {
-        return absenseService.checkAttendance(id);
+    public CheckAttendanceRespDto checkAttendance(UUID id) {
+        Absense updateAbsense = absenseService.checkAttendance(id);
+        return absenseMapper.toCheckAttendanceRespDto(updateAbsense);
     }
+
 }

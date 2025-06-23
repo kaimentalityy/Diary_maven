@@ -5,11 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.data.entity.Absense;
 import server.presentation.dto.request.AbsenseRqDto;
+import server.presentation.dto.request.AttendancePercentageRequest;
 import server.presentation.dto.request.UpdateAbsenseRqDto;
 import server.presentation.dto.response.AbsenseRespDto;
-
+import server.presentation.dto.response.AttendancePercentageResponse;
+import server.presentation.dto.response.CheckAttendanceRespDto;
 
 import java.util.UUID;
 
@@ -34,14 +35,17 @@ public class AbsenseController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/check/{id}")
-    public Boolean checkAttendance(@PathVariable UUID id) {
+    public CheckAttendanceRespDto checkAttendance(@PathVariable UUID id) {
         return facade.checkAttendance(id);
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @GetMapping("/calculate")
-    public Double calculateAttendance(@RequestParam UUID userId, @RequestParam UUID classId) {
-        return facade.calculateAttendancePercent(userId, classId);
+    @PostMapping("/calculate")
+    public AttendancePercentageResponse calculateAttendance(@Valid @RequestBody AttendancePercentageRequest request) {
+        return facade.calculateAttendancePercent(request);
     }
+
+
+
 }
 

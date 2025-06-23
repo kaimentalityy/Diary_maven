@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+            https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="role-insert-admin" author="kai">
+        <insert tableName="role">
+            <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0187"/>
+            <column name="name" value="ADMIN"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="role-insert-pupil" author="kai">
+        <insert tableName="role">
+            <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0183"/>
+            <column name="name" value="PUPIL"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="role-insert-teacher" author="kai">
+        <insert tableName="role">
+            <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0185"/>
+            <column name="name" value="TEACHER"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
