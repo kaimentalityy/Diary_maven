@@ -25,7 +25,7 @@
             <column name="role_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_blocked" type="BOOLEAN" defaultValueBoolean="false"/>
+            <column name="blocked" type="BOOLEAN" defaultValueBoolean="false"/>
             <column name="class_id" type="UUID"/>
             <column name="age" type="INT">
                 <constraints nullable="false"/>

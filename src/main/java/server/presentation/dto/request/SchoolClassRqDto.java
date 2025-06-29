@@ -14,6 +14,9 @@ public record SchoolClassRqDto(
         String number,
 
         @NotNull
-        UUID teacher_id
+        UUID teacherId,
+
+        @NotNull
+        Integer maxCapacity
 
 ) {}

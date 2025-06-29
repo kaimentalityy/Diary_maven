@@ -29,11 +29,7 @@ public class LessonService {
     }
 
     public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
-        try {
-            return lessonRepository.findAllByDate(localDateTime);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find lessons for date: " + localDateTime);
-        }
+        return lessonRepository.findAllByDate(localDateTime);
     }
 
     public void deleteLesson(UUID lessonId) {
@@ -44,16 +40,8 @@ public class LessonService {
         }
     }
 
-    public Optional<Lesson> findByClassId(UUID classId) {
-        return lessonRepository.findByClassId(classId);
-    }
-
     public List<Lesson> findBySubjectsId(UUID subjectId) {
-        try {
-            return lessonRepository.findBySubjectId(subjectId);
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find lessons by subject ID: " + subjectId);
-        }
+        return lessonRepository.findBySubject_Id(subjectId);
     }
 }
 

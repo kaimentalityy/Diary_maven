@@ -1,5 +1,6 @@
 package server.presentation.dto.request;
 
+import io.micrometer.common.lang.Nullable;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,6 +27,7 @@ public record CreateUserRqDto(
         @NotNull
         UUID roleId,
 
+        @Nullable
         UUID classId,
 
         @NotNull

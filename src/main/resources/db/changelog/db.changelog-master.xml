@@ -15,5 +15,7 @@
     <include file="changes/009-create-weekschedule.xml" relativeToChangelogFile="true"/>
     <include file="changes/010-add-foreign-keys.xml" relativeToChangelogFile="true"/>
     <include file="changes/020-insert-default-roles.xml" relativeToChangelogFile="true"/>
+    <include file="changes/021-create-dayofweek.xml" relativeToChangelogFile="true"/>
+    <include file="changes/022-insert-days-of-week.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

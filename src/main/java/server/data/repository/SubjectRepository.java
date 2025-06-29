@@ -4,15 +4,13 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import server.data.entity.Subject;
 
-import java.sql.SQLException;
 import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface SubjectRepository extends JpaRepository<Subject, UUID> {
 
-    Optional<Subject> findByName(String name) throws SQLException;
-
-    void deleteById(UUID id);
+    Optional<Subject> findByName(String name);
 
 }
+

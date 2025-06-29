@@ -2,7 +2,6 @@ package server.business.facade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import server.business.enums.DayOfWeek;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
@@ -11,9 +10,7 @@ import server.presentation.dto.response.*;
 import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
 import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
 import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
-import server.utils.exception.notfound.*;
 
-import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
@@ -27,6 +24,7 @@ public class MainFacade {
     private final LessonService lessonService;
     private final SubjectService subjectService;
     private final AbsenseService absenseService;
+    private final DayOfWeekService dayOfWeekService;
     private final SchoolClassService schoolClassService;
     private final WeekScheduleService weekScheduleService;
     private final TeacherOfSubjectService teacherOfSubjectService;
@@ -49,11 +47,11 @@ public class MainFacade {
     }
 
     public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
-        Absense absense = absenseMapper.toAttendance(absenseRqDto);
+        Attendance attendance = absenseMapper.toAttendance(absenseRqDto);
 
-        absense = absenseService.insertAbsence(absense);
+        attendance = absenseService.insertAbsence(attendance);
 
-        return absenseMapper.toAttendanceRespDto(absense);
+        return absenseMapper.toAttendanceRespDto(attendance);
     }
 
     public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
@@ -170,7 +168,10 @@ public class MainFacade {
     }
 
     public List<String> findAllGradesOfPupil(UUID id, UUID subjectId) {
-        return gradesService.getAllGradesOfPupil(id, findBySubjectsId(subjectId));
+
+        User user = userService.findUserByID(id);
+
+        return gradesService.getAllGradesOfPupil(user, findBySubjectsId(subjectId));
     }
 
     public List<Subject> findAllSubjects() {
@@ -178,7 +179,7 @@ public class MainFacade {
     }
 
     public List<Lesson> findAllLessonsInADay(DayOfWeek dayOfWeek, UUID classId) {
-        return weekScheduleService.getAllLessonsInADay(dayOfWeek.getValue(), classId);
+        return weekScheduleService.getAllLessonsInADay(dayOfWeek.getId(), classId);
     }
 
     public List<User> findAllPupilsOfClass(UUID id) {
@@ -189,7 +190,7 @@ public class MainFacade {
         return lessonService.findAllLessonsByDate(localDateTime);
     }
 
-    public Absense findAttendance(UUID id) {
+    public Attendance findAttendance(UUID id) {
         return absenseService.findAttendanceById(id);
     }
 
@@ -216,19 +217,19 @@ public class MainFacade {
     }
 
     public DayOfWeek findDayOfWeekById(int value) {
-        return DayOfWeek.getByValue(value).orElseThrow(() -> new DayOfWeekCustomNotFoundException(value));
+        return  dayOfWeekService.findDayOfWeekById(value);
     }
 
     public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
 
-        Absense absense = absenseService.updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto));
+        Attendance attendance = absenseService.updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto));
 
-        return absenseMapper.toAttendanceRespDto(absense);
+        return absenseMapper.toAttendanceRespDto(attendance);
     }
 
     public UserRespDto updateUser(UpdateUserRqDto updateUserRqDto) {
 
-        User updatedUser = userService.update(userMapper.toUserForUpdate(updateUserRqDto));
+        User updatedUser = userService.update(userMapper.toUpdateUser(updateUserRqDto));
 
         return userMapper.toUserRespDto(updatedUser);
     }
@@ -237,6 +238,8 @@ public class MainFacade {
         Grades updatedGrade = gradesService.updateGrade(dto.id(), dto.column(),  dto.value());
         return gradesMapper.toGradeRespDto(updatedGrade);
     }
+
+    //TODO remake this method (fix the rq and place in mapper)
 
 
     public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
@@ -275,8 +278,8 @@ public class MainFacade {
     }
 
     public CheckAttendanceRespDto checkAttendance(UUID id) {
-        Absense updateAbsense = absenseService.checkAttendance(id);
-        return absenseMapper.toCheckAttendanceRespDto(updateAbsense);
+        Attendance updateAttendance = absenseService.checkAttendance(id);
+        return absenseMapper.toCheckAttendanceRespDto(updateAttendance);
     }
 
 }

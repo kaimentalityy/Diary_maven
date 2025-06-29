@@ -39,11 +39,7 @@ public class SubjectService {
     }
 
     public Subject findSubjectByName(String name) {
-        try {
-            return subjectRepository.findByName(name)
-                    .orElseThrow(() -> new SubjectCustomNotFoundException("Subject not found with name: " + name));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to find subject by name: " + name);
-        }
+        return subjectRepository.findByName(name)
+                .orElseThrow(() -> new SubjectCustomNotFoundException("Subject not found with name: " + name));
     }
 }

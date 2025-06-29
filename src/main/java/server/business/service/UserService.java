@@ -2,30 +2,25 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.data.entity.SchoolClass;
 import server.data.entity.User;
+import server.data.repository.SchoolClassRepository;
 import server.data.repository.UserRepository;
-import server.utils.exception.badrequest.InvalidColumnNameExceptionCustom;
-import server.utils.exception.conflict.UserAlreadyExistsExceptionCustom;
-import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
+import server.utils.exception.notfound.SchoolClassCustomNotFoundException;
 import server.utils.exception.notfound.UserCustomNotFoundException;
 
-import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
-import java.util.Scanner;
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
+    private final SchoolClassRepository schoolClassRepository;
 
     public User findUserByLogin(String login) {
-        try {
-            return userRepository.findByLogin(login).orElseThrow(() -> new UserCustomNotFoundException("User not found"));
-        } catch (SQLException e) {
-            throw new DatabaseOperationExceptionCustom("Failed to fetch user by login: " + login);
-        }
+        return userRepository.findByLogin(login).orElseThrow(() -> new UserCustomNotFoundException("User not found"));
     }
 
     public User save(User user){
@@ -53,25 +48,26 @@ public class UserService {
         user.setLogin(incomingUser.getLogin());
         user.setPassword(incomingUser.getPassword());
         user.setBlocked(incomingUser.isBlocked());
-        user.setRoleId(incomingUser.getRoleId());
-        user.setClassId(incomingUser.getClassId());
+        user.setRole(incomingUser.getRole());
+        user.setSchoolClass(incomingUser.getSchoolClass());
         user.setAge(incomingUser.getAge());
 
         return userRepository.save(user);
     }
 
-
-
     public List<User> findPupilsOfClass(UUID id) {
-        return userRepository.findByClassId(id);
+        return userRepository.findBySchoolClassId(id);
     }
 
     public void updateClassOfStudent(UUID classId, UUID userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserCustomNotFoundException(userId));
 
-        user.setClassId(classId);
+        SchoolClass schoolClass = schoolClassRepository.findById(classId)
+                .orElseThrow(() -> new SchoolClassCustomNotFoundException(classId));
 
+        user.setSchoolClass(schoolClass);
         userRepository.save(user);
     }
+
 }

@@ -3,8 +3,8 @@ package server.business.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.data.entity.TeacherOfSubject;
+import server.data.repository.SubjectRepository;
 import server.data.repository.TeacherOfSubjectRepository;
-import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 import server.utils.exception.notfound.TeacherCustomNotFoundException;
 
 import java.util.UUID;
@@ -14,6 +14,7 @@ import java.util.UUID;
 public class TeacherOfSubjectService {
 
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;
+    private final SubjectRepository subjectRepository;
 
     public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) {
         return teacherOfSubjectRepository.save(teacherOfSubject);
@@ -23,12 +24,12 @@ public class TeacherOfSubjectService {
         teacherOfSubjectRepository.deleteById(id);
     }
 
-    public TeacherOfSubject updateTeacher(TeacherOfSubject incoming) {
-        TeacherOfSubject existing = teacherOfSubjectRepository.findById(incoming.getId())
-                .orElseThrow(() -> new TeacherCustomNotFoundException("Teacher not found with ID: " + incoming.getId()));
+    public TeacherOfSubject updateTeacher(TeacherOfSubject updatedData) {
+        TeacherOfSubject existing = teacherOfSubjectRepository.findById(updatedData.getId())
+                .orElseThrow(() -> new TeacherCustomNotFoundException("Teacher not found with ID: " + updatedData.getId()));
 
-        existing.setSubjectId(incoming.getSubjectId());
-        existing.setTeacherId(incoming.getTeacherId());
+        existing.setSubject(updatedData.getSubject());
+        existing.setTeacher(updatedData.getTeacher());
 
         return teacherOfSubjectRepository.save(existing);
     }

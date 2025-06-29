@@ -8,10 +8,10 @@ import java.util.UUID;
 public record GradeRqDto(
 
         @NotNull
-        UUID pupil_id,
+        UUID pupilId,
 
         @NotNull
-        UUID lesson_id,
+        UUID lessonId,
 
         @NotBlank
         String grade

@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.data.entity.Lesson;
-import server.data.entity.WeekSchedule;
 import server.presentation.dto.request.WeekScheduleRqDto;
 import server.presentation.dto.response.WeekScheduleRespDto;
 

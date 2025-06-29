@@ -11,15 +11,15 @@ public record WeekScheduleRqDto(
         @NotNull
         @Min(1)
         @Max(7)
-        Integer day_of_week,
+        Integer dayOfWeek,
 
         @NotNull
-        UUID lesson_id,
+        UUID lessonId,
 
         @NotNull
         @Min(1)
         @Max(10)
-        Integer lesson_number
+        Integer lessonNumber
 
 ) {}
 

@@ -15,7 +15,7 @@ public record LessonRqDto(
 
         @NotNull
         @NotBlank
-        UUID teacher_of_subject_id,
+        UUID teacherOfSubjectId,
 
         @NotNull
         @FutureOrPresent

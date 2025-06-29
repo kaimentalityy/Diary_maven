@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.data.entity.SchoolClass;
 import server.data.entity.User;
 import server.presentation.dto.request.SchoolClassRqDto;
 import server.presentation.dto.response.SchoolClassRespDto;

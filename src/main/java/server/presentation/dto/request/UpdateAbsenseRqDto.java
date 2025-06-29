@@ -12,13 +12,13 @@ public record UpdateAbsenseRqDto(
         UUID id,
 
         @NotNull
-        UUID lesson_id,
+        UUID lessonId,
 
         @NotNull
-        UUID pupil_id,
+        UUID pupilId,
 
         @NotNull
-        Boolean is_absent,
+        Boolean present,
 
         @NotNull
         @PastOrPresent

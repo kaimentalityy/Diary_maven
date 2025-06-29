@@ -1,15 +1,16 @@
 package server.data.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
+import java.sql.Date;
 import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "grades")
-public class Grades {
+@Table(name = "attendance")
+public class Attendance {
 
     @Id
     @GeneratedValue(generator = "UUID")
@@ -17,13 +18,14 @@ public class Grades {
     private UUID id;
 
     @ManyToOne
+    @JoinColumn(name = "lesson_id", nullable = false)
+    private Lesson lesson;
+
+    @ManyToOne
     @JoinColumn(name = "pupil_id", nullable = false)
     private User pupil;
 
-    private String grade;
+    private Boolean present;
 
-    @ManyToOne
-    @JoinColumn(name = "lesson_id", nullable = false)
-    private Lesson lesson;
+    private Date date;
 }
-

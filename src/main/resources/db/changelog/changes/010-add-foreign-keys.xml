@@ -7,32 +7,32 @@
                         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="010" author="kai">
-        <addForeignKeyConstraint baseTableName="users" baseColumnNames="role_id"
+        <addForeignKeyConstraint baseTableName= "users" baseColumnNames="role_id"
                                  constraintName="fk_users_role" referencedTableName="role"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="users" baseColumnNames="class_id"
-                                 constraintName="fk_users_class" referencedTableName="class"
+                                 constraintName="fk_users_class" referencedTableName="schoolclass"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="class" baseColumnNames="teacher_id"
+        <addForeignKeyConstraint baseTableName="schoolclass" baseColumnNames="teacher_id"
                                  constraintName="fk_class_teacher" referencedTableName="users"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="teacher_of_subject" baseColumnNames="subject_id"
+        <addForeignKeyConstraint baseTableName="teacherofsubject" baseColumnNames="subject_id"
                                  constraintName="fk_tos_subject" referencedTableName="subject"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="teacher_of_subject" baseColumnNames="teacher_id"
+        <addForeignKeyConstraint baseTableName="teacherofsubject" baseColumnNames="teacher_id"
                                  constraintName="fk_tos_teacher" referencedTableName="users"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="class_id"
-                                 constraintName="fk_lesson_class" referencedTableName="class"
+                                 constraintName="fk_lesson_class" referencedTableName="schoolclass"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="teacher_of_subject_id"
-                                 constraintName="fk_lesson_tos" referencedTableName="teacher_of_subject"
+                                 constraintName="fk_lesson_tos" referencedTableName="teacherofsubject"
                                  referencedColumnNames="id"/>
 
         <addForeignKeyConstraint baseTableName="lesson" baseColumnNames="subject_id"
@@ -55,7 +55,7 @@
                                  constraintName="fk_grades_lesson" referencedTableName="lesson"
                                  referencedColumnNames="id"/>
 
-        <addForeignKeyConstraint baseTableName="week_schedule" baseColumnNames="lesson_id"
+        <addForeignKeyConstraint baseTableName="weekschedule" baseColumnNames="lesson_id"
                                  constraintName="fk_ws_lesson" referencedTableName="lesson"
                                  referencedColumnNames="id"/>
     </changeSet>
