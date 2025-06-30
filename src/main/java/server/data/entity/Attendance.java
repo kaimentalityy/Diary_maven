@@ -25,7 +25,9 @@ public class Attendance {
     @JoinColumn(name = "pupil_id", nullable = false)
     private User pupil;
 
+    @Column(nullable = false)
     private Boolean present;
 
+    @Column(nullable = false)
     private Date date;
 }

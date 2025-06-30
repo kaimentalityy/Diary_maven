@@ -16,6 +16,7 @@ public class Subject {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
+    @Column(nullable = false)
     private String name;
 
 }

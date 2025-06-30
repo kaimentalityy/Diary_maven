@@ -38,5 +38,6 @@ public class User {
     @JoinColumn(name = "class_id", nullable = false)
     private SchoolClass schoolClass;
 
+    @Column(nullable = false)
     private Integer age;
 }

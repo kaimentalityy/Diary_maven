@@ -19,12 +19,9 @@ public interface AbsenseMapper {
     @Mapping(target = "id", source = "id")
     @Mapping(target = "lessonId", source = "lesson.id")
     @Mapping(target = "pupilId", source = "pupil.id")
-    @Mapping(target = "present", source = "present")
-    @Mapping(target = "date", source = "date")
     AbsenseRespDto toAttendanceRespDto(Attendance attendance);
 
     @Mapping(target = "id", source = "id")
-    @Mapping(target = "present", source = "present")
     CheckAttendanceRespDto toCheckAttendanceRespDto(Attendance attendance);
 
     @Mapping(target = "userId", source = "request.userId")
@@ -35,15 +32,11 @@ public interface AbsenseMapper {
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
     @Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
-    @Mapping(target = "present", source = "present")
-    @Mapping(target = "date", source = "date")
     Attendance toAttendance(AbsenseRqDto absenseRqDto);
 
     @Mapping(target = "id", source = "id")
     @Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
     @Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
-    @Mapping(target = "present", source = "present")
-    @Mapping(target = "date", source = "date")
     Attendance toAttendanceForUpdate(UpdateAbsenseRqDto updateAbsenseRqDto);
 
     @Named("mapLesson")

@@ -24,6 +24,7 @@ public class WeekSchedule {
     @JoinColumn(name = "day_of_week",  nullable = false)
     private DayOfWeek dayOfWeek;
 
+    @Column
     private Integer lessonNumber;
 
 }

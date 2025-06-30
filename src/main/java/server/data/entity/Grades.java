@@ -20,6 +20,7 @@ public class Grades {
     @JoinColumn(name = "pupil_id", nullable = false)
     private User pupil;
 
+    @Column(nullable = false)
     private String grade;
 
     @ManyToOne

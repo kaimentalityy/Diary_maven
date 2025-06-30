@@ -16,13 +16,16 @@ public class SchoolClass {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
+    @Column
     private String letter;
 
+    @Column
     private String number;
 
     @OneToOne
     @JoinColumn(name = "teacher_id", nullable = false)
     private User teacher;
 
-    private Integer maxCapacity = 30;
+    @Column
+    private Integer maxCapacity;
 }
