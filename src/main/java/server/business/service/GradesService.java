@@ -2,12 +2,15 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.GradesMapper;
 import server.data.entity.User;
 import server.data.entity.Grades;
 import server.data.entity.Lesson;
 import server.data.repository.GradesRepository;
 import server.data.repository.LessonRepository;
 import server.data.repository.UserRepository;
+import server.presentation.dto.request.GradeRqDto;
+import server.presentation.dto.response.GradeRespDto;
 import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
 import server.utils.exception.badrequest.InvalidRequestExceptionCustom;
 import server.utils.exception.conflict.GradeAlreadyExistsExceptionCustom;
@@ -21,8 +24,21 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class GradesService {
     private final GradesRepository gradesRepository;
-    private final UserRepository userRepository;
-    private final LessonRepository lessonRepository;
+    private final UserService  userService;
+    private final LessonService lessonService;
+    private final GradesMapper gradesMapper;
+
+
+    public GradeRespDto giveGrade(GradeRqDto gradeRqDto) {
+
+        User user = userService.findUserByID(gradeRqDto.pupilId());
+        Lesson lesson = lessonService.findById(gradeRqDto.lessonId());
+        Grades grades = gradesMapper.toGrade(gradeRqDto, user, lesson);
+
+        grades = giveGrade(grades);
+
+        return gradesMapper.toGradeRespDto(grades);
+    }
 
     public Grades giveGrade(Grades grades) {
         if (gradesRepository.existsByPupilAndLessonAndGradeAndIdNot(grades.getPupil(), grades.getLesson(), grades.getGrade(), grades.getId())) {
@@ -46,7 +62,7 @@ public class GradesService {
 
     public Double calculateAverageGrade(UUID pupilId, List<Lesson> lessons) {
 
-        User pupil = userRepository.findById(pupilId).orElseThrow(() -> new UserCustomNotFoundException(pupilId));
+        User pupil = userService.findUserByID(pupilId);
 
         List<String> grades = getAllGradesOfPupil(pupil, lessons);
 
@@ -74,13 +90,11 @@ public class GradesService {
 
         switch (column) {
             case "pupilId" -> {
-                User pupil = userRepository.findById(UUID.fromString(value))
-                        .orElseThrow(() -> new GradeCustomNotFoundException("Pupil not found: " + value));
+                User pupil = userService.findUserByID(UUID.fromString(value));
                 grade.setPupil(pupil);
             }
             case "lessonId" -> {
-                Lesson lesson = lessonRepository.findById(UUID.fromString(value))
-                        .orElseThrow(() -> new GradeCustomNotFoundException("Lesson not found: " + value));
+                Lesson lesson = lessonService.findById(UUID.fromString(value));
                 grade.setLesson(lesson);
             }
             case "grade" -> grade.setGrade(value);

@@ -30,5 +30,5 @@ public class Lesson {
     private Subject subject;
 
     @Column(nullable = false)
-    private LocalDateTime date;
+    private LocalDateTime lessonDate;
 }

@@ -11,7 +11,7 @@ public record LessonRqDto(
 
         @NotNull
         @NotBlank
-        UUID class_id,
+        UUID classId,
 
         @NotNull
         @NotBlank
@@ -19,10 +19,10 @@ public record LessonRqDto(
 
         @NotNull
         @FutureOrPresent
-        LocalDateTime date,
+        LocalDateTime localDate,
 
         @NotNull
         @NotBlank
-        UUID subject_id
+        UUID subjectId
 
 ) {}

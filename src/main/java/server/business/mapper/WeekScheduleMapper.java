@@ -19,28 +19,6 @@ public interface WeekScheduleMapper {
     WeekScheduleRespDto toWeekScheduleRespDto(WeekSchedule weekSchedule);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "dayOfWeek", source = "dayOfWeek", qualifiedByName = "mapDayOfWeek")
-    @Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
-    @Mapping(target = "lessonNumber", source = "lessonNumber")
-    WeekSchedule toWeekSchedule(WeekScheduleRqDto weekScheduleRqDto);
-
-    @Named("mapDayOfWeek")
-    default DayOfWeek mapDayOfWeek(Integer dayOfWeekId) {
-        if (dayOfWeekId == null) {
-            throw new IllegalArgumentException("Day of week ID cannot be null");
-        }
-        DayOfWeek dayOfWeek = new DayOfWeek();
-        dayOfWeek.setId(dayOfWeekId);
-        return dayOfWeek;
-    }
-
-    @Named("mapLesson")
-    default Lesson mapLesson(UUID lessonId) {
-        if (lessonId == null) {
-            throw new IllegalArgumentException("Lesson ID cannot be null");
-        }
-        Lesson lesson = new Lesson();
-        lesson.setId(lessonId);
-        return lesson;
-    }
+    @Mapping(target = "dayOfWeek", source = "dayOfWeek")
+    WeekSchedule toWeekSchedule(WeekScheduleRqDto weekScheduleRqDto, DayOfWeek dayOfWeek,  Lesson lesson);
 }

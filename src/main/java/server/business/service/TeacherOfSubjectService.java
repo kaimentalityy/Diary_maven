@@ -2,9 +2,14 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.TeacherMapper;
+import server.data.entity.Subject;
 import server.data.entity.TeacherOfSubject;
+import server.data.entity.User;
 import server.data.repository.SubjectRepository;
 import server.data.repository.TeacherOfSubjectRepository;
+import server.presentation.dto.request.TeacherRqDto;
+import server.presentation.dto.response.TeacherRespDto;
 import server.utils.exception.notfound.TeacherCustomNotFoundException;
 
 import java.util.UUID;
@@ -14,7 +19,20 @@ import java.util.UUID;
 public class TeacherOfSubjectService {
 
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;
-    private final SubjectRepository subjectRepository;
+    private final TeacherMapper teacherMapper;
+    private final UserService  userService;
+    private final SubjectService subjectService;
+
+    public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto) {
+
+        Subject subject = subjectService.findById(teacherRqDto.subjectId());
+        User teacher = userService.findUserByID(teacherRqDto.teacherId());
+        TeacherOfSubject teacherOfSubject = teacherMapper.toTeacherOfSubject(teacherRqDto, teacher, subject);
+
+        teacherOfSubject = addTeacher(teacherOfSubject);
+
+        return teacherMapper.toTeacherRespDto(teacherOfSubject);
+    }
 
     public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) {
         return teacherOfSubjectRepository.save(teacherOfSubject);

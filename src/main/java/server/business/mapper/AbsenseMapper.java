@@ -3,6 +3,7 @@ package server.business.mapper;
 import org.mapstruct.*;
 import server.data.entity.Attendance;
 import server.data.entity.Lesson;
+import server.data.entity.SchoolClass;
 import server.data.entity.User;
 import server.presentation.dto.request.AbsenseRqDto;
 import server.presentation.dto.request.AttendancePercentageRequest;
@@ -21,41 +22,18 @@ public interface AbsenseMapper {
     @Mapping(target = "pupilId", source = "pupil.id")
     AbsenseRespDto toAttendanceRespDto(Attendance attendance);
 
-    @Mapping(target = "id", source = "id")
-    CheckAttendanceRespDto toCheckAttendanceRespDto(Attendance attendance);
+    //@Mapping(target = "id", source = "id")
+    //CheckAttendanceRespDto toCheckAttendanceRespDto(Attendance attendance);
 
-    @Mapping(target = "userId", source = "request.userId")
-    @Mapping(target = "classId", source = "request.classId")
-    @Mapping(target = "percentage", source = "percentage")
-    AttendancePercentageResponse toAttendancePercentageResponse(AttendancePercentageRequest request, double percentage);
+    //@Mapping(target = "userId", source = "request.userId")
+    //@Mapping(target = "classId", source = "request.classId")
+    //AttendancePercentageResponse toAttendancePercentageResponse(AttendancePercentageRequest request, double percentage);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
-    @Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
-    Attendance toAttendance(AbsenseRqDto absenseRqDto);
+    Attendance toAttendance(AbsenseRqDto absenseRqDto, Lesson lesson, User user);
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
-    @Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
-    Attendance toAttendanceForUpdate(UpdateAbsenseRqDto updateAbsenseRqDto);
-
-    @Named("mapLesson")
-    default Lesson mapLesson(UUID lessonId) {
-        if (lessonId == null) {
-            throw new IllegalArgumentException("Lesson ID cannot be null");
-        }
-        Lesson lesson = new Lesson();
-        lesson.setId(lessonId);
-        return lesson;
-    }
-
-    @Named("mapUser")
-    default User mapUser(UUID userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
-        }
-        User user = new User();
-        user.setId(userId);
-        return user;
-    }
+    //@Mapping(target = "id", source = "id")
+    //@Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
+    //@Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
+    //Attendance toAttendanceForUpdate(UpdateAbsenseRqDto updateAbsenseRqDto);
 }

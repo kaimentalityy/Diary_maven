@@ -2,10 +2,16 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.UserMapper;
+import server.data.entity.Role;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
+import server.data.repository.RoleRepository;
 import server.data.repository.SchoolClassRepository;
 import server.data.repository.UserRepository;
+import server.presentation.dto.request.CreateUserRqDto;
+import server.presentation.dto.response.UserRespDto;
+import server.utils.exception.notfound.RoleCustomNotFoundException;
 import server.utils.exception.notfound.SchoolClassCustomNotFoundException;
 import server.utils.exception.notfound.UserCustomNotFoundException;
 
@@ -16,8 +22,26 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
 
+    private final UserMapper userMapper;
     private final UserRepository userRepository;
-    private final SchoolClassRepository schoolClassRepository;
+    private final SchoolClassService schoolClassService;
+    private final RoleService roleService;
+
+    public UserRespDto createUser(CreateUserRqDto createUserRqDto) {
+
+        Role role = roleService.findById(createUserRqDto.roleId());
+
+        SchoolClass schoolClass = null;
+        if (createUserRqDto.classId() != null) {
+            schoolClass = schoolClassService.findClassById(createUserRqDto.classId());
+        }
+
+        User user = userMapper.toUser(createUserRqDto, role, schoolClass);
+
+        user = save(user);
+
+        return userMapper.toUserRespDto(user);
+    }
 
     public User findUserByLogin(String login) {
         return userRepository.findByLogin(login).orElseThrow(() -> new UserCustomNotFoundException("User not found"));
@@ -63,8 +87,7 @@ public class UserService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserCustomNotFoundException(userId));
 
-        SchoolClass schoolClass = schoolClassRepository.findById(classId)
-                .orElseThrow(() -> new SchoolClassCustomNotFoundException(classId));
+        SchoolClass schoolClass = schoolClassService.findClassById(classId);
 
         user.setSchoolClass(schoolClass);
         userRepository.save(user);

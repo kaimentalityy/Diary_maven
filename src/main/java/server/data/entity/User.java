@@ -1,5 +1,6 @@
 package server.data.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
@@ -32,10 +33,11 @@ public class User {
     private Role role;
 
     @Column(name = "blocked", nullable = false)
-    private boolean blocked = false;
+    private boolean blocked;
 
     @ManyToOne
-    @JoinColumn(name = "class_id", nullable = false)
+    @JoinColumn(name = "class_id", nullable = true)
+    @Nullable
     private SchoolClass schoolClass;
 
     @Column(nullable = false)

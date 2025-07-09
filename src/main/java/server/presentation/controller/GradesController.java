@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
+import server.business.service.GradesService;
 import server.presentation.dto.request.GradeRqDto;
 import server.presentation.dto.request.UpdateGradeRqDto;
 import server.presentation.dto.response.GradeRespDto;
@@ -18,11 +19,12 @@ import java.util.UUID;
 public class GradesController {
 
     private final MainFacade facade;
+    private final GradesService gradesService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public GradeRespDto giveGrade(@Valid @RequestBody GradeRqDto gradeRqDto) {
-        return facade.giveGrade(gradeRqDto);
+        return gradesService.giveGrade(gradeRqDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

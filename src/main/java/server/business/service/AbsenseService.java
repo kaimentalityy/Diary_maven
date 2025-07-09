@@ -2,8 +2,13 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.AbsenseMapper;
 import server.data.entity.Attendance;
+import server.data.entity.Lesson;
+import server.data.entity.User;
 import server.data.repository.AbsenseRepository;
+import server.presentation.dto.request.AbsenseRqDto;
+import server.presentation.dto.response.AbsenseRespDto;
 import server.utils.exception.notfound.AbsenseCustomNotFoundException;
 
 import java.util.List;
@@ -12,7 +17,23 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class AbsenseService {
+    private final AbsenseMapper absenseMapper;
     private final AbsenseRepository absenseRepository;
+    private final UserService userService;
+    private final LessonService lessonService;
+
+    public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
+
+        User user = userService.findUserByID(absenseRqDto.pupilId());
+
+        Lesson lesson = lessonService.findById(absenseRqDto.lessonId());
+
+        Attendance attendance = absenseMapper.toAttendance(absenseRqDto, lesson, user);
+
+        attendance = insertAbsence(attendance);
+
+        return absenseMapper.toAttendanceRespDto(attendance);
+    }
 
     public Attendance insertAbsence(Attendance attendance) {
         absenseRepository.save(attendance);

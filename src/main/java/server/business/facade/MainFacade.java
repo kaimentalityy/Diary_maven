@@ -9,7 +9,6 @@ import server.presentation.dto.request.*;
 import server.presentation.dto.response.*;
 import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
 import server.utils.exception.badrequest.InvalidNumberExceptionCustom;
-import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -29,54 +28,9 @@ public class MainFacade {
     private final WeekScheduleService weekScheduleService;
     private final TeacherOfSubjectService teacherOfSubjectService;
 
-    private final UserMapper userMapper;
     private final GradesMapper gradesMapper;
-    private final LessonMapper lessonMapper;
     private final SubjectMapper subjectMapper;
-    private final AbsenseMapper absenseMapper;
     private final TeacherMapper teacherMapper;
-    private final SchoolClassMapper schoolClassMapper;
-    private final WeekScheduleMapper weekScheduleMapper;
-
-    public UserRespDto createUser(CreateUserRqDto createUserRqDto) {
-        User user = userMapper.toUser(createUserRqDto);
-
-        user = userService.save(user);
-
-        return userMapper.toUserRespDto(user);
-    }
-
-    public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
-        Attendance attendance = absenseMapper.toAttendance(absenseRqDto);
-
-        attendance = absenseService.insertAbsence(attendance);
-
-        return absenseMapper.toAttendanceRespDto(attendance);
-    }
-
-    public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
-        WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto);
-
-        weekSchedule = weekScheduleService.insertLessonInSchedule(weekSchedule);
-
-        return weekScheduleMapper.toWeekScheduleRespDto(weekSchedule);
-    }
-
-    public GradeRespDto giveGrade(GradeRqDto gradeRqDto) {
-        Grades grades = gradesMapper.toGrade(gradeRqDto);
-
-        grades = gradesService.giveGrade(grades);
-
-        return gradesMapper.toGradeRespDto(grades);
-    }
-
-    public LessonRespDto assignLesson(LessonRqDto lessonRqDto) {
-        Lesson lesson = lessonMapper.toLesson(lessonRqDto);
-
-        lesson = lessonService.addLesson(lesson);
-
-        return lessonMapper.toLessonRespDto(lesson);
-    }
 
     public SubjectRespDto createSubject(SubjectRqDto subjectRqDto) {
         Subject subject = subjectMapper.toSubject(subjectRqDto);
@@ -86,21 +40,7 @@ public class MainFacade {
         return subjectMapper.toSubjectRespDto(subject);
     }
 
-    public SchoolClassRespDto createSchoolClass(SchoolClassRqDto schoolClassRqDto) {
-        SchoolClass schoolClass = schoolClassMapper.toSchoolClass(schoolClassRqDto);
 
-        schoolClass = schoolClassService.createClass(schoolClass);
-
-        return schoolClassMapper.toSchoolClassRespDto(schoolClass);
-    }
-
-    public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto) {
-        TeacherOfSubject teacherOfSubject = teacherMapper.toTeacher(teacherRqDto);
-
-        teacherOfSubject = teacherOfSubjectService.addTeacher(teacherOfSubject);
-
-        return teacherMapper.toTeacherRespDto(teacherOfSubject);
-    }
 
     public void assignPupilToClass(UUID userId, UUID classId) {
         User user = findUserById(userId);
@@ -198,7 +138,7 @@ public class MainFacade {
         return gradesService.calculateAverageGrade(id, findBySubjectsId(subjectId));
     }
 
-    public AttendancePercentageResponse calculateAttendancePercent(AttendancePercentageRequest attendancePercentageRequest) {
+    /*public AttendancePercentageResponse calculateAttendancePercent(AttendancePercentageRequest attendancePercentageRequest) {
         double totalHours = weekScheduleService.countTotalHoursAWeek(attendancePercentageRequest.classId());
         double attended = absenseService.calculateAttendance(attendancePercentageRequest.userId());
 
@@ -209,7 +149,7 @@ public class MainFacade {
         double percentage = (attended / totalHours) * 100;
         
         return absenseMapper.toAttendancePercentageResponse(attendancePercentageRequest, percentage);
-    }
+    }*/
 
 
     public User findUserByLogin(String login) {
@@ -220,19 +160,19 @@ public class MainFacade {
         return  dayOfWeekService.findDayOfWeekById(value);
     }
 
-    public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
+    /*public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
 
         Attendance attendance = absenseService.updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto));
 
         return absenseMapper.toAttendanceRespDto(attendance);
-    }
+    }*/
 
-    public UserRespDto updateUser(UpdateUserRqDto updateUserRqDto) {
+    /*public UserRespDto updateUser(UpdateUserRqDto updateUserRqDto) {
 
         User updatedUser = userService.update(userMapper.toUpdateUser(updateUserRqDto));
 
         return userMapper.toUserRespDto(updatedUser);
-    }
+    }*/
 
     public GradeRespDto updateGrade(UpdateGradeRqDto dto) {
         Grades updatedGrade = gradesService.updateGrade(dto.id(), dto.column(),  dto.value());
@@ -242,12 +182,12 @@ public class MainFacade {
     //TODO remake this method (fix the rq and place in mapper)
 
 
-    public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
+    /*public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
 
         TeacherOfSubject updatedTeacher = teacherOfSubjectService.updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto));
 
         return teacherMapper.toTeacherRespDto(updatedTeacher);
-    }
+    }*/
 
     public void deleteUser(UUID id) {
         userService.delete(id);
@@ -277,9 +217,9 @@ public class MainFacade {
         teacherOfSubjectService.deleteTeacher(id);
     }
 
-    public CheckAttendanceRespDto checkAttendance(UUID id) {
+    /*public CheckAttendanceRespDto checkAttendance(UUID id) {
         Attendance updateAttendance = absenseService.checkAttendance(id);
         return absenseMapper.toCheckAttendanceRespDto(updateAttendance);
-    }
+    }*/
 
 }

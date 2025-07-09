@@ -2,14 +2,14 @@ package server.business.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.WeekScheduleMapper;
 import server.data.entity.DayOfWeek;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
-import server.data.repository.DayOfWeekRepository;
-import server.data.repository.LessonRepository;
 import server.data.repository.WeekScheduleRepository;
+import server.presentation.dto.request.WeekScheduleRqDto;
+import server.presentation.dto.response.WeekScheduleRespDto;
 import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
-import server.utils.exception.notfound.DayOfWeekCustomNotFoundException;
 import server.utils.exception.notfound.WeekScheduleCustomNotFoundException;
 
 import java.util.List;
@@ -20,14 +20,26 @@ import java.util.UUID;
 public class WeekScheduleService {
 
     private final WeekScheduleRepository weekScheduleRepository;
-    private final LessonRepository lessonRepository;
-    private final DayOfWeekRepository dayOfWeekRepository;
+    private final LessonService lessonService;
+    private final DayOfWeekService dayOfWeekService;
+    private final WeekScheduleMapper weekScheduleMapper;
 
     public WeekSchedule insertLessonInSchedule(WeekSchedule schedule) {
         if (weekScheduleRepository.existsByLessonAndDayOfWeekAndLessonNumber(schedule.getLesson(), schedule.getDayOfWeek(), schedule.getLessonNumber())) {
             throw new DatabaseOperationExceptionCustom("Schedule already exists.");
         }
         return weekScheduleRepository.save(schedule);
+    }
+
+    public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
+
+        Lesson lesson = lessonService.findById(weekScheduleRqDto.lessonId());
+        DayOfWeek day = dayOfWeekService.findDayOfWeekById(weekScheduleRqDto.dayOfWeek());
+        WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto, day, lesson);
+
+        weekSchedule = insertLessonInSchedule(weekSchedule);
+
+        return weekScheduleMapper.toWeekScheduleRespDto(weekSchedule);
     }
 
     public void unscheduleLessonFromSchedule(UUID id) {
@@ -47,11 +59,9 @@ public class WeekScheduleService {
     }
 
     public List<Lesson> getAllLessonsInADay(int dayOfWeekValue, UUID lessonId) {
-        DayOfWeek dayOfWeek = dayOfWeekRepository.findById(dayOfWeekValue)
-                .orElseThrow(() -> new DayOfWeekCustomNotFoundException(dayOfWeekValue));
+        DayOfWeek dayOfWeek = dayOfWeekService.findDayOfWeekById(dayOfWeekValue);
 
-        Lesson lesson = lessonRepository.findById(lessonId)
-                .orElseThrow(() -> new WeekScheduleCustomNotFoundException("Lesson not found: " + lessonId));
+        Lesson lesson = lessonService.findById(lessonId);
 
         List<WeekSchedule> entries = weekScheduleRepository.findByDayOfWeekAndLesson(dayOfWeek, lesson);
 

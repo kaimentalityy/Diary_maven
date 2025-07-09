@@ -3,5 +3,5 @@ package server.presentation.dto.response;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-public record LessonRespDto(UUID id , UUID class_id, UUID teacherOfSubjectId, LocalDateTime date, UUID subject_id) {
+public record LessonRespDto(UUID id , UUID classId, UUID teacherOfSubjectId, LocalDateTime lessonDate, UUID subjectId) {
 }

@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
+import server.business.service.SchoolClassService;
 import server.data.entity.User;
 import server.presentation.dto.request.SchoolClassRqDto;
 import server.presentation.dto.response.SchoolClassRespDto;
@@ -19,11 +20,12 @@ import java.util.UUID;
 public class SchoolClassController {
 
     private final MainFacade facade;
+    private final SchoolClassService schoolClassService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public SchoolClassRespDto createSchoolClass(@Valid @RequestBody SchoolClassRqDto schoolClassRqDto) throws ConstraintViolationExceptionCustom {
-        return facade.createSchoolClass(schoolClassRqDto);
+        return schoolClassService.createSchoolClass(schoolClassRqDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)

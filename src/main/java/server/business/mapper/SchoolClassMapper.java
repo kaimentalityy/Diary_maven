@@ -18,16 +18,5 @@ public interface SchoolClassMapper {
     SchoolClassRespDto toSchoolClassRespDto(SchoolClass schoolClass);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "teacher", source = "teacherId", qualifiedByName = "mapUser")
-    SchoolClass toSchoolClass(SchoolClassRqDto schoolClassRqDto);
-
-    @Named("mapUser")
-    default User mapUser(UUID userId) {
-        if (userId == null) {
-            throw new IllegalArgumentException("User ID cannot be null");
-        }
-        User user = new User();
-        user.setId(userId);
-        return user;
-    }
+    SchoolClass toSchoolClass(SchoolClassRqDto schoolClassRqDto, User teacher);
 }

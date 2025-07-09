@@ -2,8 +2,14 @@ package server.business.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import server.business.mapper.LessonMapper;
 import server.data.entity.Lesson;
+import server.data.entity.SchoolClass;
+import server.data.entity.Subject;
+import server.data.entity.TeacherOfSubject;
 import server.data.repository.LessonRepository;
+import server.presentation.dto.request.LessonRqDto;
+import server.presentation.dto.response.LessonRespDto;
 import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
 import server.utils.exception.notfound.LessonCustomNotFoundException;
 
@@ -18,6 +24,23 @@ import java.util.UUID;
 public class LessonService {
 
     private final LessonRepository lessonRepository;
+    private final SubjectService subjectService;
+    private final LessonMapper lessonMapper;
+    private final SchoolClassService schoolClassService;
+    private final TeacherOfSubjectService teacherOfSubjectService;
+
+    public LessonRespDto assignLesson(LessonRqDto lessonRqDto) {
+
+        Subject subject = subjectService.findById(lessonRqDto.subjectId());
+        SchoolClass schoolClass = schoolClassService.findClassById(lessonRqDto.classId());
+        TeacherOfSubject teacherOfSubject =  teacherOfSubjectService.findById(lessonRqDto.teacherOfSubjectId());
+
+        Lesson lesson = lessonMapper.toLesson(lessonRqDto, schoolClass, subject, teacherOfSubject);
+
+        lesson = addLesson(lesson);
+
+        return lessonMapper.toLessonRespDto(lesson);
+    }
 
     public Lesson addLesson(Lesson lesson) {
         return lessonRepository.save(lesson);
@@ -29,7 +52,7 @@ public class LessonService {
     }
 
     public List<Lesson> findAllLessonsByDate(LocalDateTime localDateTime) {
-        return lessonRepository.findAllByDate(localDateTime);
+        return lessonRepository.findAllByLessonDate(localDateTime);
     }
 
     public void deleteLesson(UUID lessonId) {

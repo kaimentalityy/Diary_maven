@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
+import server.business.service.TeacherOfSubjectService;
 import server.presentation.dto.request.TeacherRqDto;
 import server.presentation.dto.request.UpdateTeacherRqDto;
 import server.presentation.dto.response.TeacherRespDto;
@@ -18,11 +19,12 @@ import java.util.UUID;
 public class TeacherController {
 
     private final MainFacade facade;
+    private final TeacherOfSubjectService  teacherOfSubjectService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public TeacherRespDto addTeacher(@Valid @RequestBody TeacherRqDto teacherRqDto) {
-        return facade.addTeacher(teacherRqDto);
+        return teacherOfSubjectService.addTeacher(teacherRqDto);
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -31,9 +33,9 @@ public class TeacherController {
         facade.deleteTeacher(id);
     }
 
-    @ResponseStatus(HttpStatus.OK)
+    /*@ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
     public TeacherRespDto updateTeacher(@Valid @RequestBody UpdateTeacherRqDto updateTeacherRqDto) {
         return facade.updateTeacher(updateTeacherRqDto);
-    }
+    }*/
 }

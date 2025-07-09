@@ -11,7 +11,7 @@ import java.util.UUID;
 
 @Repository
 public interface LessonRepository extends JpaRepository<Lesson, UUID> {
-    List<Lesson> findAllByDate(LocalDateTime date);
+    List<Lesson> findAllByLessonDate(LocalDateTime lessonDate);
 
     List<Lesson> findBySubject_Id(UUID subjectId);
 }
