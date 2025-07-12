@@ -22,18 +22,18 @@ public interface AbsenseMapper {
     @Mapping(target = "pupilId", source = "pupil.id")
     AbsenseRespDto toAttendanceRespDto(Attendance attendance);
 
-    //@Mapping(target = "id", source = "id")
-    //CheckAttendanceRespDto toCheckAttendanceRespDto(Attendance attendance);
+    @Mapping(target = "id", source = "id")
+    CheckAttendanceRespDto toCheckAttendanceRespDto(Attendance attendance);
 
-    //@Mapping(target = "userId", source = "request.userId")
-    //@Mapping(target = "classId", source = "request.classId")
-    //AttendancePercentageResponse toAttendancePercentageResponse(AttendancePercentageRequest request, double percentage);
+    @Mapping(target = "userId", source = "request.userId")
+    @Mapping(target = "classId", source = "request.classId")
+    AttendancePercentageResponse toAttendancePercentageResponse(AttendancePercentageRequest request, double percentage);
 
     @Mapping(target = "id", ignore = true)
     Attendance toAttendance(AbsenseRqDto absenseRqDto, Lesson lesson, User user);
 
-    //@Mapping(target = "id", source = "id")
-    //@Mapping(target = "lesson", source = "lessonId", qualifiedByName = "mapLesson")
-    //@Mapping(target = "pupil", source = "pupilId", qualifiedByName = "mapUser")
-    //Attendance toAttendanceForUpdate(UpdateAbsenseRqDto updateAbsenseRqDto);
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "present", source = "updateAbsenseRqDto.present")
+    @Mapping(target = "date", source = "updateAbsenseRqDto.date")
+    Attendance toAttendanceForUpdate(UpdateAbsenseRqDto updateAbsenseRqDto, Lesson lesson, User pupil);
 }

@@ -8,21 +8,21 @@
     <changeSet id="role-insert-admin" author="kai">
         <insert tableName="role">
             <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0187"/>
-            <column name="name" value="ADMIN"/>
+            <column name="roleName" value="ADMIN"/>
         </insert>
     </changeSet>
 
     <changeSet id="role-insert-pupil" author="kai">
         <insert tableName="role">
             <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0183"/>
-            <column name="name" value="PUPIL"/>
+            <column name="roleName" value="PUPIL"/>
         </insert>
     </changeSet>
 
     <changeSet id="role-insert-teacher" author="kai">
         <insert tableName="role">
             <column name="id" value="d65e91f2-68bd-4578-93cf-e0bc3ddd0185"/>
-            <column name="name" value="TEACHER"/>
+            <column name="roleName" value="TEACHER"/>
         </insert>
     </changeSet>
 </databaseChangeLog>

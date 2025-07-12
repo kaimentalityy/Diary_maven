@@ -18,10 +18,8 @@ public interface UserMapper {
     @Mapping(target = "name", source = "dto.name")
     User toUser(CreateUserRqDto dto, Role role, SchoolClass schoolClass);
 
-    /*@Mapping(target = "id", ignore = true)
-    @Mapping(source = "roleId", target = "role")
-    @Mapping(source = "classId", target = "schoolClass")
-    User toUpdateUser(UpdateUserRqDto dto);*/
+    @Mapping(target = "id", ignore = true)
+    User toUpdateUser(UpdateUserRqDto dto, Role role, SchoolClass schoolClass);
 
     @Mapping(target = "role", source = "role.id")
     @Mapping(target = "classId", source = "schoolClass.id")

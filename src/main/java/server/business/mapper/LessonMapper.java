@@ -17,5 +17,7 @@ public interface LessonMapper {
     LessonRespDto toLessonRespDto(Lesson lesson);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "teacherOfSubject", source = "teacherOfSubject")
+    @Mapping(target = "lessonDate", source = "lessonRqDto.localDate")
     Lesson toLesson(LessonRqDto lessonRqDto, SchoolClass schoolClass, Subject subject, TeacherOfSubject teacherOfSubject);
 }

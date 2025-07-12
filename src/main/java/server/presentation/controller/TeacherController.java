@@ -33,9 +33,9 @@ public class TeacherController {
         facade.deleteTeacher(id);
     }
 
-    /*@ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
     public TeacherRespDto updateTeacher(@Valid @RequestBody UpdateTeacherRqDto updateTeacherRqDto) {
         return facade.updateTeacher(updateTeacherRqDto);
-    }*/
+    }
 }

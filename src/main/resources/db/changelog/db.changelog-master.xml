@@ -17,5 +17,6 @@
     <include file="changes/020-insert-default-roles.xml" relativeToChangelogFile="true"/>
     <include file="changes/021-create-dayofweek.xml" relativeToChangelogFile="true"/>
     <include file="changes/022-insert-days-of-week.xml" relativeToChangelogFile="true"/>
+    <include file="changes/023-create-books.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

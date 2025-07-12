@@ -38,11 +38,11 @@ public class UserController {
         facade.deleteUser(id);
     }
 
-    /* @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
     public UserRespDto updateUser(@Valid @RequestBody UpdateUserRqDto updateUserRqDto) {
         return facade.updateUser(updateUserRqDto);
-    } */
+    }
 
 }
 

@@ -25,9 +25,7 @@ public class AbsenseService {
     public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
 
         User user = userService.findUserByID(absenseRqDto.pupilId());
-
         Lesson lesson = lessonService.findById(absenseRqDto.lessonId());
-
         Attendance attendance = absenseMapper.toAttendance(absenseRqDto, lesson, user);
 
         attendance = insertAbsence(attendance);

@@ -10,7 +10,7 @@
             <column name="id" type="UUID">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="name" type="VARCHAR(50)">
+            <column name="roleName" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
         </createTable>

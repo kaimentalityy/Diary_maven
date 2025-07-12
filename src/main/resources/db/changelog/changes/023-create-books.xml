@@ -5,24 +5,31 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
-    <changeSet id="006" author="kai">
-        <createTable tableName="lesson">
+    <changeSet id="023" author="kai">
+        <createTable tableName="book">
             <column name="id" type="UUID">
-                <constraints primaryKey="true"/>
+                <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="class_id" type="UUID">
+            <column name="title" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="teacher_of_subject_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="lesson_date" type="TIMESTAMP">
+            <column name="class_year" type="VARCHAR(3)">
                 <constraints nullable="false"/>
             </column>
             <column name="subject_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
+            <column name="path" type="VARCHAR(512)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
-    </changeSet>
 
+        <addForeignKeyConstraint
+                baseTableName="book"
+                baseColumnNames="subject_id"
+                referencedTableName="subject"
+                referencedColumnNames="id"
+                constraintName="fk_book_subject"
+                onDelete="CASCADE"/>
+    </changeSet>
 </databaseChangeLog>

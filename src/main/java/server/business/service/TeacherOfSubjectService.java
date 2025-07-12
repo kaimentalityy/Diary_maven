@@ -6,7 +6,6 @@ import server.business.mapper.TeacherMapper;
 import server.data.entity.Subject;
 import server.data.entity.TeacherOfSubject;
 import server.data.entity.User;
-import server.data.repository.SubjectRepository;
 import server.data.repository.TeacherOfSubjectRepository;
 import server.presentation.dto.request.TeacherRqDto;
 import server.presentation.dto.response.TeacherRespDto;

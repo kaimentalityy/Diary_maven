@@ -17,10 +17,9 @@ public interface TeacherMapper {
     TeacherRespDto toTeacherRespDto(TeacherOfSubject teacherOfSubject);
 
     @Mapping(target = "id", ignore = true)
-    TeacherOfSubject toTeacherOfSubject(TeacherRqDto teacherRqDto, User user, Subject subject);
+    TeacherOfSubject toTeacherOfSubject(TeacherRqDto teacherRqDto, User teacher, Subject subject);
 
-    /*@Mapping(target = "subject", source = "subjectId", qualifiedByName = "mapSubject")
-    @Mapping(target = "teacher", source = "teacherId", qualifiedByName = "mapUser")
-    TeacherOfSubject toTeacherForUpdate(UpdateTeacherRqDto updateTeacherRqDto);*/
+    @Mapping(target = "id",  ignore = true)
+    TeacherOfSubject toTeacherForUpdate(UpdateTeacherRqDto updateTeacherRqDto, Subject subject, User teacher);
 
 }

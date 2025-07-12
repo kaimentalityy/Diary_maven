@@ -29,7 +29,7 @@ public class AbsenseController {
         return absenseService.insertAttendance(absenseRqDto);
     }
 
-    /*@ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.OK)
     @PatchMapping("/{id}")
     public AbsenseRespDto updateAttendance(@Valid @RequestBody UpdateAbsenseRqDto updateAbsenseRqDto) {
         return facade.updateAttendance(updateAbsenseRqDto);
@@ -45,7 +45,7 @@ public class AbsenseController {
     @PostMapping("/calculate")
     public AttendancePercentageResponse calculateAttendance(@Valid @RequestBody AttendancePercentageRequest request) {
         return facade.calculateAttendancePercent(request);
-    }*/
+    }
 
 
 

@@ -10,11 +10,9 @@ import java.util.UUID;
 public record LessonRqDto(
 
         @NotNull
-        @NotBlank
         UUID classId,
 
         @NotNull
-        @NotBlank
         UUID teacherOfSubjectId,
 
         @NotNull
@@ -22,7 +20,6 @@ public record LessonRqDto(
         LocalDateTime localDate,
 
         @NotNull
-        @NotBlank
         UUID subjectId
 
 ) {}
