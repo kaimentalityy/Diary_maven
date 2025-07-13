@@ -2,7 +2,7 @@ package server.business.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import server.data.entity.DayOfWeek;
+import server.data.enums.DayOfWeek;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
 import server.presentation.dto.request.WeekScheduleRqDto;

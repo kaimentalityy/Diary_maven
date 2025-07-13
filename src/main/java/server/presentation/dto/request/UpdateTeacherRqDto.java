@@ -1,5 +1,6 @@
 package server.presentation.dto.request;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
@@ -10,7 +11,7 @@ public record UpdateTeacherRqDto(
         UUID id,
 
         @NotNull
-        UUID subjectId,
+        Integer subjectId,
 
         @NotNull
         UUID teacherId

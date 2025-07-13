@@ -2,10 +2,9 @@ package server.business.mapper;
 
 import org.mapstruct.*;
 import server.data.entity.*;
+import server.data.enums.Subject;
 import server.presentation.dto.request.LessonRqDto;
 import server.presentation.dto.response.LessonRespDto;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface LessonMapper {

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
 import server.business.service.GradesService;
+import server.data.enums.Subject;
 import server.presentation.dto.request.GradeRqDto;
 import server.presentation.dto.request.UpdateGradeRqDto;
 import server.presentation.dto.response.GradeRespDto;
@@ -41,14 +42,16 @@ public class GradesController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/pupil-grades")
-    public List<String> findAllGradesOfPupil(@RequestParam UUID userId, @RequestParam UUID subjectId) {
-        return facade.findAllGradesOfPupil(userId, subjectId);
+    public List<String> findAllGradesOfPupil(@RequestParam UUID userId, @RequestParam Integer subjectId) {
+        Subject subject = Subject.getById(subjectId);
+        return facade.findAllGradesOfPupil(userId, subject);
     }
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/average-grade")
-    public Double calculateAverageGrade(@RequestParam UUID userId, @RequestParam UUID subjectId) {
-        return facade.calculateAverageGrade(userId, subjectId);
+    public Double calculateAverageGrade(@RequestParam UUID userId, @RequestParam Integer subjectId) {
+        Subject subject = Subject.getById(subjectId);
+        return facade.calculateAverageGrade(userId, subject);
     }
 }
 

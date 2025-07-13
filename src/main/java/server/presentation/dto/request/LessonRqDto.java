@@ -1,5 +1,6 @@
 package server.presentation.dto.request;
 
+import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -20,6 +21,6 @@ public record LessonRqDto(
         LocalDateTime localDate,
 
         @NotNull
-        UUID subjectId
+        Integer subjectId
 
 ) {}

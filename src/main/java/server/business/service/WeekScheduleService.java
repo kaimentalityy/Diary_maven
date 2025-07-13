@@ -3,7 +3,7 @@ package server.business.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.WeekScheduleMapper;
-import server.data.entity.DayOfWeek;
+import server.data.enums.DayOfWeek;
 import server.data.entity.Lesson;
 import server.data.entity.WeekSchedule;
 import server.data.repository.WeekScheduleRepository;
@@ -21,7 +21,6 @@ public class WeekScheduleService {
 
     private final WeekScheduleRepository weekScheduleRepository;
     private final LessonService lessonService;
-    private final DayOfWeekService dayOfWeekService;
     private final WeekScheduleMapper weekScheduleMapper;
 
     public WeekSchedule insertLessonInSchedule(WeekSchedule schedule) {
@@ -34,7 +33,7 @@ public class WeekScheduleService {
     public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
 
         Lesson lesson = lessonService.findById(weekScheduleRqDto.lessonId());
-        DayOfWeek day = dayOfWeekService.findDayOfWeekById(weekScheduleRqDto.dayOfWeek());
+        DayOfWeek day = DayOfWeek.getById(weekScheduleRqDto.dayOfWeek());
         WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto, day, lesson);
 
         weekSchedule = insertLessonInSchedule(weekSchedule);
@@ -59,7 +58,7 @@ public class WeekScheduleService {
     }
 
     public List<Lesson> getAllLessonsInADay(int dayOfWeekValue, UUID lessonId) {
-        DayOfWeek dayOfWeek = dayOfWeekService.findDayOfWeekById(dayOfWeekValue);
+        DayOfWeek dayOfWeek = DayOfWeek.getById(dayOfWeekValue);
 
         Lesson lesson = lessonService.findById(lessonId);
 

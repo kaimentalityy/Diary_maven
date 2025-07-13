@@ -3,6 +3,7 @@ package server.data.entity;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.hibernate.annotations.GenericGenerator;
+import server.data.enums.DayOfWeek;
 
 import java.util.UUID;
 
@@ -20,8 +21,8 @@ public class WeekSchedule {
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 
-    @ManyToOne
-    @JoinColumn(name = "day_of_week",  nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 
     @Column

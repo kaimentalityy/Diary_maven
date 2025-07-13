@@ -36,7 +36,7 @@ public class WeekScheduleController {
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/day-lessons")
     public List<Lesson> findAllLessonsInADay(@RequestParam int dayOfWeekId, @RequestParam UUID schoolClassId) {
-        return facade.findAllLessonsInADay(facade.findDayOfWeekById(dayOfWeekId), schoolClassId);
+        return facade.findAllLessonsInADay(dayOfWeekId, schoolClassId);
     }
 }
 

@@ -18,5 +18,7 @@
     <include file="changes/021-create-dayofweek.xml" relativeToChangelogFile="true"/>
     <include file="changes/022-insert-days-of-week.xml" relativeToChangelogFile="true"/>
     <include file="changes/023-create-books.xml" relativeToChangelogFile="true"/>
+    <include file="changes/024-drop-subjects-table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/025-drop-dayofweek-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

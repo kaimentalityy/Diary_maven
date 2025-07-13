@@ -3,7 +3,7 @@ package server.business.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.TeacherMapper;
-import server.data.entity.Subject;
+import server.data.enums.Subject;
 import server.data.entity.TeacherOfSubject;
 import server.data.entity.User;
 import server.data.repository.TeacherOfSubjectRepository;
@@ -20,11 +20,10 @@ public class TeacherOfSubjectService {
     private final TeacherOfSubjectRepository teacherOfSubjectRepository;
     private final TeacherMapper teacherMapper;
     private final UserService  userService;
-    private final SubjectService subjectService;
 
     public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto) {
 
-        Subject subject = subjectService.findById(teacherRqDto.subjectId());
+        Subject subject = Subject.getById(teacherRqDto.subjectId());
         User teacher = userService.findUserByID(teacherRqDto.teacherId());
         TeacherOfSubject teacherOfSubject = teacherMapper.toTeacherOfSubject(teacherRqDto, teacher, subject);
 

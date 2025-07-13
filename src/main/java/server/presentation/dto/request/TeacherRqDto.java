@@ -7,7 +7,7 @@ import java.util.UUID;
 public record TeacherRqDto(
 
         @NotNull
-        UUID subjectId,
+        Integer subjectId,
 
         @NotNull
         UUID teacherId

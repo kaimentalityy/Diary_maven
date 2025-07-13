@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
+import server.data.enums.DayOfWeek;
+import server.data.enums.Subject;
 import server.presentation.dto.request.*;
 import server.presentation.dto.response.*;
 import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
@@ -22,28 +24,17 @@ public class MainFacade {
     private final UserService userService;
     private final GradesService gradesService;
     private final LessonService lessonService;
-    private final SubjectService subjectService;
     private final AbsenseService absenseService;
-    private final DayOfWeekService dayOfWeekService;
     private final SchoolClassService schoolClassService;
     private final WeekScheduleService weekScheduleService;
     private final TeacherOfSubjectService teacherOfSubjectService;
 
     private final GradesMapper gradesMapper;
-    private final SubjectMapper subjectMapper;
     private final AbsenseMapper absenseMapper;
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final TeacherMapper teacherMapper;
 
-
-    public SubjectRespDto createSubject(SubjectRqDto subjectRqDto) {
-        Subject subject = subjectMapper.toSubject(subjectRqDto);
-
-        subject = subjectService.createSubject(subject);
-
-        return subjectMapper.toSubjectRespDto(subject);
-    }
 
     public void assignPupilToClass(UUID userId, UUID classId) {
         User user = findUserById(userId);
@@ -94,35 +85,23 @@ public class MainFacade {
         return lessonService.findById(id);
     }
 
-    public Subject findSubjectById(UUID id) {
-        return subjectService.findById(id);
-    }
-
     public TeacherOfSubject findTeacherById(UUID id) {
         return teacherOfSubjectService.findById(id);
     }
 
-    public Subject findSubjectByName(String name) {
-        return subjectService.findSubjectByName(name);
+    public List<Lesson> findBySubjectsId(Subject subject) {
+        return lessonService.findBySubjectsId(subject);
     }
 
-    public List<Lesson> findBySubjectsId(UUID subjectId) {
-        return lessonService.findBySubjectsId(subjectId);
-    }
-
-    public List<String> findAllGradesOfPupil(UUID id, UUID subjectId) {
+    public List<String> findAllGradesOfPupil(UUID id, Subject subject) {
 
         User user = userService.findUserByID(id);
 
-        return gradesService.getAllGradesOfPupil(user, findBySubjectsId(subjectId));
+        return gradesService.getAllGradesOfPupil(user, findBySubjectsId(subject));
     }
 
-    public List<Subject> findAllSubjects() {
-        return subjectService.findAllSubjects();
-    }
-
-    public List<Lesson> findAllLessonsInADay(DayOfWeek dayOfWeek, UUID classId) {
-        return weekScheduleService.getAllLessonsInADay(dayOfWeek.getId(), classId);
+    public List<Lesson> findAllLessonsInADay(Integer dayOfWeekId, UUID classId) {
+        return weekScheduleService.getAllLessonsInADay(dayOfWeekId, classId);
     }
 
     public List<User> findAllPupilsOfClass(UUID id) {
@@ -137,8 +116,8 @@ public class MainFacade {
         return absenseService.findAttendanceById(id);
     }
 
-    public Double calculateAverageGrade(UUID id, UUID subjectId) {
-        return gradesService.calculateAverageGrade(id, findBySubjectsId(subjectId));
+    public Double calculateAverageGrade(UUID id, Subject subject) {
+        return gradesService.calculateAverageGrade(id, findBySubjectsId(subject));
     }
 
     public AttendancePercentageResponse calculateAttendancePercent(AttendancePercentageRequest attendancePercentageRequest) {
@@ -154,13 +133,8 @@ public class MainFacade {
         return absenseMapper.toAttendancePercentageResponse(attendancePercentageRequest, percentage);
     }
 
-
     public User findUserByLogin(String login) {
         return userService.findUserByLogin(login);
-    }
-
-    public DayOfWeek findDayOfWeekById(int value) {
-        return  dayOfWeekService.findDayOfWeekById(value);
     }
 
     public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
@@ -196,7 +170,7 @@ public class MainFacade {
     public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
 
         User user = userService.findUserByID(updateTeacherRqDto.teacherId());
-        Subject subject = subjectService.findById(updateTeacherRqDto.subjectId());
+        Subject subject = Subject.getById(updateTeacherRqDto.subjectId());
         TeacherOfSubject updatedTeacher = teacherOfSubjectService.updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto, subject, user));
 
         return teacherMapper.toTeacherRespDto(updatedTeacher);
@@ -220,10 +194,6 @@ public class MainFacade {
 
     public void removeLessonFromSchedule(UUID id) {
         weekScheduleService.unscheduleLessonFromSchedule(id);
-    }
-
-    public void deleteSubject(UUID id) {
-        subjectService.deleteSubject(id);
     }
 
     public void deleteTeacher(UUID id) {
