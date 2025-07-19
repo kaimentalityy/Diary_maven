@@ -7,7 +7,7 @@
 
     <changeSet id="004" author="kai">
         <createTable tableName="subject">
-            <column name="id" type="integer">
+            <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
             <column name="name" type="VARCHAR(100)">

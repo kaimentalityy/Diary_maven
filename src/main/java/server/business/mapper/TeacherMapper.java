@@ -1,7 +1,7 @@
 package server.business.mapper;
 
 import org.mapstruct.*;
-import server.data.enums.Subject;
+import server.data.entity.Subject;
 import server.data.entity.TeacherOfSubject;
 import server.data.entity.User;
 import server.presentation.dto.request.TeacherRqDto;

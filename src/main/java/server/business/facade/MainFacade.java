@@ -5,8 +5,6 @@ import org.springframework.stereotype.Service;
 import server.business.mapper.*;
 import server.business.service.*;
 import server.data.entity.*;
-import server.data.enums.DayOfWeek;
-import server.data.enums.Subject;
 import server.presentation.dto.request.*;
 import server.presentation.dto.response.*;
 import server.utils.exception.badrequest.ConstraintViolationExceptionCustom;
@@ -28,6 +26,7 @@ public class MainFacade {
     private final SchoolClassService schoolClassService;
     private final WeekScheduleService weekScheduleService;
     private final TeacherOfSubjectService teacherOfSubjectService;
+    private final SubjectService subjectService;
 
     private final GradesMapper gradesMapper;
     private final AbsenseMapper absenseMapper;
@@ -170,7 +169,7 @@ public class MainFacade {
     public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
 
         User user = userService.findUserByID(updateTeacherRqDto.teacherId());
-        Subject subject = Subject.getById(updateTeacherRqDto.subjectId());
+        Subject subject = subjectService.findById(updateTeacherRqDto.subjectId());
         TeacherOfSubject updatedTeacher = teacherOfSubjectService.updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto, subject, user));
 
         return teacherMapper.toTeacherRespDto(updatedTeacher);

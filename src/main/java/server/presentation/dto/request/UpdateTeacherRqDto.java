@@ -11,7 +11,7 @@ public record UpdateTeacherRqDto(
         UUID id,
 
         @NotNull
-        Integer subjectId,
+        UUID subjectId,
 
         @NotNull
         UUID teacherId

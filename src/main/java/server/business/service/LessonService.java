@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import server.business.mapper.LessonMapper;
 import server.data.entity.Lesson;
 import server.data.entity.SchoolClass;
-import server.data.enums.Subject;
+import server.data.entity.Subject;
 import server.data.entity.TeacherOfSubject;
 import server.data.repository.LessonRepository;
 import server.presentation.dto.request.LessonRqDto;
@@ -24,10 +24,11 @@ public class LessonService {
     private final LessonMapper lessonMapper;
     private final SchoolClassService schoolClassService;
     private final TeacherOfSubjectService teacherOfSubjectService;
+    private final SubjectService subjectService;
 
     public LessonRespDto assignLesson(LessonRqDto lessonRqDto) {
 
-        Subject subject = Subject.getById(lessonRqDto.subjectId());
+        Subject subject = subjectService.findById(lessonRqDto.subjectId());
         SchoolClass schoolClass = schoolClassService.findClassById(lessonRqDto.classId());
         TeacherOfSubject teacherOfSubject =  teacherOfSubjectService.findById(lessonRqDto.teacherOfSubjectId());
 

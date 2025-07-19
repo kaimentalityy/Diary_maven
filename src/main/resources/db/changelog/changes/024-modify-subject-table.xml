@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="024" author="kai">
+        <addColumn tableName="subject">
+            <column name="class_id" type="UUID">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <addForeignKeyConstraint
+                baseTableName="subject"
+                baseColumnNames="class_id"
+                referencedTableName="schoolclass"
+                referencedColumnNames="id"
+                constraintName="fk_subject_class"
+                deferrable="false"
+                initiallyDeferred="false"
+                onDelete="SET NULL"
+                onUpdate="RESTRICT"/>
+
+    </changeSet>
+
+</databaseChangeLog>

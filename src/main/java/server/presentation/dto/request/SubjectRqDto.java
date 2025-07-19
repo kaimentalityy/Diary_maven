@@ -4,11 +4,11 @@ import jakarta.validation.constraints.NotNull;
 
 import java.util.UUID;
 
-public record TeacherRqDto(
+public record SubjectRqDto (
 
         @NotNull
-        UUID subjectId,
+        String name,
 
         @NotNull
-        UUID teacherId
-) {}
+        UUID class_id
+){}

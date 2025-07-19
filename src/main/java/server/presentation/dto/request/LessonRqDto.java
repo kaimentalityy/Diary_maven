@@ -21,6 +21,6 @@ public record LessonRqDto(
         LocalDateTime localDate,
 
         @NotNull
-        Integer subjectId
+        UUID subjectId
 
 ) {}

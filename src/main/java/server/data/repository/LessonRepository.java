@@ -3,7 +3,7 @@ package server.data.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import server.data.entity.Lesson;
-import server.data.enums.Subject;
+import server.data.entity.Subject;
 
 import java.time.LocalDateTime;
 import java.util.List;
