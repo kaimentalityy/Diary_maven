@@ -2,13 +2,10 @@ package server.business.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.Named;
 import server.data.entity.SchoolClass;
 import server.data.entity.User;
 import server.presentation.dto.request.SchoolClassRqDto;
 import server.presentation.dto.response.SchoolClassRespDto;
-
-import java.util.UUID;
 
 @Mapper(componentModel = "spring")
 public interface SchoolClassMapper {
@@ -18,5 +15,6 @@ public interface SchoolClassMapper {
     SchoolClassRespDto toSchoolClassRespDto(SchoolClass schoolClass);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "year", source = "schoolClassRqDto.number")
     SchoolClass toSchoolClass(SchoolClassRqDto schoolClassRqDto, User teacher);
 }

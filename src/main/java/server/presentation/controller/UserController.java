@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.business.service.UserService;
 import server.presentation.dto.request.CreateUserRqDto;
 import server.presentation.dto.request.UpdateUserRqDto;
 import server.presentation.dto.response.UserRespDto;
@@ -18,12 +17,11 @@ import java.util.UUID;
 public class UserController {
 
     private final MainFacade facade;
-    private final UserService userService;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("create")
     public UserRespDto createAccount(@Valid @RequestBody CreateUserRqDto createUserRqDto) {
-        return userService.createUser(createUserRqDto);
+        return facade.addUser(createUserRqDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

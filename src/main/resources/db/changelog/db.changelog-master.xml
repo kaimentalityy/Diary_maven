@@ -19,4 +19,6 @@
     <include file="changes/022-insert-days-of-week.xml" relativeToChangelogFile="true"/>
     <include file="changes/024-modify-subject-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/025-drop-dayofweek-table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/026-create-files-table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/027-create-subject_material-table.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

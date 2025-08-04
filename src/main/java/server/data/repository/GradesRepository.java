@@ -2,9 +2,9 @@ package server.data.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import server.data.entity.User;
 import server.data.entity.Grades;
 import server.data.entity.Lesson;
+import server.data.entity.User;
 
 import java.util.List;
 import java.util.UUID;

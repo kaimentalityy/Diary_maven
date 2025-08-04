@@ -3,14 +3,10 @@ package server.business.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.SubjectMapper;
-import server.data.entity.Lesson;
 import server.data.entity.SchoolClass;
 import server.data.entity.Subject;
-import server.data.entity.TeacherOfSubject;
 import server.data.repository.SubjectRepository;
-import server.presentation.dto.request.LessonRqDto;
 import server.presentation.dto.request.SubjectRqDto;
-import server.presentation.dto.response.LessonRespDto;
 import server.presentation.dto.response.SubjectRespDto;
 import server.utils.exception.notfound.SubjectCustomNotFoundException;
 
@@ -30,17 +26,10 @@ public class SubjectService {
 
     public SubjectRespDto addSubject(SubjectRqDto subjectRqDto) {
 
-        SchoolClass schoolClass = schoolClassService.findClassById(subjectRqDto.class_id());
-
+        SchoolClass schoolClass = schoolClassService.findClassById(subjectRqDto.classId());
         Subject subject = subjectMapper.toSubject(subjectRqDto, schoolClass);
-
         subject = subjectRepository.save(subject);
 
         return subjectMapper.toSubjectRespDto(subject);
     }
-
-    public void save(Subject subject) {
-        subjectRepository.save(subject);
-    }
-
 }

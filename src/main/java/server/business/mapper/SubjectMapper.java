@@ -10,8 +10,6 @@ import server.presentation.dto.response.SubjectRespDto;
 @Mapper(componentModel = "spring")
 public interface SubjectMapper {
 
-    @Mapping(target = "id", source = "id")
-    @Mapping(target = "name", source = "name")
     @Mapping(target = "classId", source = "schoolClass.id")
     SubjectRespDto toSubjectRespDto(Subject subject);
 

@@ -10,5 +10,5 @@ public record SubjectRqDto (
         String name,
 
         @NotNull
-        UUID class_id
+        UUID classId
 ){}

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import server.business.facade.MainFacade;
-import server.business.service.AbsenseService;
 import server.presentation.dto.request.AbsenseRqDto;
 import server.presentation.dto.request.AttendancePercentageRequest;
 import server.presentation.dto.request.UpdateAbsenseRqDto;
@@ -20,13 +19,12 @@ import java.util.UUID;
 @RequestMapping("/api/absences")
 public class AbsenseController {
 
-    private final AbsenseService absenseService;
     private final MainFacade facade;
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
     public AbsenseRespDto insertAbsence(@Valid @RequestBody AbsenseRqDto absenseRqDto) {
-        return absenseService.insertAttendance(absenseRqDto);
+        return facade.insertAbsense(absenseRqDto);
     }
 
     @ResponseStatus(HttpStatus.OK)

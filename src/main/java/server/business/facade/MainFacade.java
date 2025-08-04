@@ -34,6 +34,37 @@ public class MainFacade {
     private final RoleService roleService;
     private final TeacherMapper teacherMapper;
 
+    public LessonRespDto addLesson(LessonRqDto lessonRqDto){
+        return lessonService.assignLesson(lessonRqDto);
+    }
+
+    public SchoolClassRespDto addSchoolClass(SchoolClassRqDto schoolClassRqDto){
+        return schoolClassService.createSchoolClass(schoolClassRqDto);
+    }
+
+    public SubjectRespDto addSubject(SubjectRqDto subjectRqDto){
+        return subjectService.addSubject(subjectRqDto);
+    }
+
+    public WeekScheduleRespDto addWeekSchedule(WeekScheduleRqDto weekScheduleRqDto){
+        return weekScheduleService.addLessonWeekSchedule(weekScheduleRqDto);
+    }
+
+    public UserRespDto addUser(CreateUserRqDto userRqDto){
+        return userService.createUser(userRqDto);
+    }
+
+    public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto){
+        return teacherOfSubjectService.addTeacher(teacherRqDto);
+    }
+
+    public AbsenseRespDto insertAbsense(AbsenseRqDto absenseRqDto) {
+        return absenseService.insertAttendance(absenseRqDto);
+    }
+
+    public GradeRespDto giveGrade(GradeRqDto gradeRqDto) {
+        return gradesService.giveGrade(gradeRqDto);
+    }
 
     public void assignPupilToClass(UUID userId, UUID classId) {
         User user = findUserById(userId);
@@ -59,7 +90,7 @@ public class MainFacade {
     }
 
     public Integer getMinimumAgeForClass(UUID classId) {
-        String classNumber = findSchoolClassById(classId).getNumber();
+        String classNumber = findSchoolClassById(classId).getYear().toString();
         try {
             int number = Integer.parseInt(classNumber);
             return 5 + number;
@@ -70,6 +101,10 @@ public class MainFacade {
 
     public User findUserById(UUID id) {
         return userService.findUserByID(id);
+    }
+
+    public Subject findSubjectById(UUID id) {
+        return subjectService.findById(id);
     }
 
     public Grades findGradeById(UUID id) {

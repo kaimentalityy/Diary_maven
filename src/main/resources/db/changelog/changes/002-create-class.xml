@@ -19,7 +19,7 @@
             <column name="teacher_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="maxCapacity" type="INT">
+            <column name="max_capacity" type="INT">
                 <constraints nullable="false"/>
             </column>
         </createTable>

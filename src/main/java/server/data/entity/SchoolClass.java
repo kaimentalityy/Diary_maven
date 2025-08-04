@@ -20,7 +20,7 @@ public class SchoolClass {
     private String letter;
 
     @Column
-    private String number;
+    private Integer year;
 
     @OneToOne
     @JoinColumn(name = "teacher_id", nullable = false)
