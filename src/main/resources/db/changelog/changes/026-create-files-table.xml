@@ -28,6 +28,12 @@
             <column name="content_type" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
+            <column name="deleted_at" type="TIMESTAMP">
+                <constraints nullable="true"/>
+            </column>
+            <column name="status" type="VARCHAR(20)">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
 

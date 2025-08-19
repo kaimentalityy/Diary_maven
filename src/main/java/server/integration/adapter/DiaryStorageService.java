@@ -13,6 +13,7 @@ import org.springframework.web.client.RestClient;
 import org.springframework.web.multipart.MultipartFile;
 import server.integration.dto.response.FileRespDto;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -30,7 +31,7 @@ public class DiaryStorageService {
 
     public FileRespDto upload(MultipartFile multipartFile) throws IOException {
         MultiValueMap<String, Object> body = new LinkedMultiValueMap<>();
-        body.add("file", new ByteArrayResource(multipartFile.getBytes()){
+        body.add("file", new ByteArrayResource(multipartFile.getBytes()) {
             @Override
             public String getFilename() {
                 return multipartFile.getOriginalFilename();
@@ -44,6 +45,7 @@ public class DiaryStorageService {
                 .retrieve()
                 .body(FileRespDto.class);
     }
+
 
     public void deleteFile(UUID fileId) {
         try {
@@ -61,6 +63,19 @@ public class DiaryStorageService {
                     .toBodilessEntity();
         } catch (Exception e) {
             throw new RuntimeException("Failed to call storage service: " + e.getMessage(), e);
+        }
+    }
+
+    public ByteArrayInputStream getFiles(String path) {
+        try {
+            byte[] fileBytes = restClient.get()
+                    .uri(path)
+                    .retrieve()
+                    .body(byte[].class);
+
+            return new ByteArrayInputStream(fileBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Unable to fetch file from path: " + path, e);
         }
     }
 

@@ -44,7 +44,6 @@ public class SubjectMaterialService {
         return subjectMaterialMapper.toDto(material);
     }
 
-
     public void deleteMaterial(UUID materialId) {
         SubjectMaterial material = subjectMaterialRepository.findById(materialId)
                 .orElseThrow(() -> new IllegalArgumentException("Material not found"));

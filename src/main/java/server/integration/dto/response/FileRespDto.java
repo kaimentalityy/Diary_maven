@@ -6,10 +6,12 @@ import java.util.UUID;
 public record FileRespDto(
         UUID fileId,
         String name,
-        String path,
         long size,
         String contentType,
         String extension,
-        LocalDateTime uploadTimestamp
-
-) {}
+        LocalDateTime uploadTimestamp,
+        LocalDateTime lastUpdate,
+        LocalDateTime deletedAt,
+        String status
+) {
+}
