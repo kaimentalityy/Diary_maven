@@ -19,10 +19,10 @@
             <column name="extension" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
-            <column name="upload_date" type="TIMESTAMP">
+            <column name="uploaded_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="last_update" type="TIMESTAMP">
+            <column name="updated_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
             <column name="content_type" type="VARCHAR(100)">

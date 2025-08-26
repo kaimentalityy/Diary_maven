@@ -53,14 +53,16 @@ public class DiaryStorageService {
                     .uri("/api/files/{fileId}", fileId)
                     .retrieve()
                     .onStatus(
-                            status -> status.is4xxClientError() || status.is5xxServerError(),
+                            status -> status.isError(),
                             (request, response) -> {
+                                String body = new String(response.getBody().readAllBytes());
                                 throw new RuntimeException(
-                                        "Failed to delete file: " + response.getStatusText()
+                                        "Failed to delete file: " + " | " + body
                                 );
                             }
                     )
                     .toBodilessEntity();
+
         } catch (Exception e) {
             throw new RuntimeException("Failed to call storage service: " + e.getMessage(), e);
         }
