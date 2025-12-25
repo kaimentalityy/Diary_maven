@@ -16,30 +16,16 @@ public class User {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
-    private String lastname;
-
     @Column(nullable = false, unique = true)
     private String login;
 
     @Column(nullable = false)
     private String password;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
     @Column(name = "blocked", nullable = false)
     private boolean blocked;
-
-    @ManyToOne
-    @JoinColumn(name = "class_id", nullable = true)
-    @Nullable
-    private SchoolClass schoolClass;
-
-    @Column(nullable = false)
-    private Integer age;
 }

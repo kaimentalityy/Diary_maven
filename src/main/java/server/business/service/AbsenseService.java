@@ -5,8 +5,9 @@ import org.springframework.stereotype.Service;
 import server.business.mapper.AbsenseMapper;
 import server.data.entity.Attendance;
 import server.data.entity.Lesson;
-import server.data.entity.User;
+import server.data.entity.StudentProfile;
 import server.data.repository.AbsenseRepository;
+import server.data.repository.StudentProfileRepository;
 import server.presentation.dto.request.AbsenseRqDto;
 import server.presentation.dto.response.AbsenseRespDto;
 import server.utils.exception.notfound.AbsenseCustomNotFoundException;
@@ -19,14 +20,16 @@ import java.util.UUID;
 public class AbsenseService {
     private final AbsenseMapper absenseMapper;
     private final AbsenseRepository absenseRepository;
-    private final UserService userService;
+    private final StudentProfileRepository studentProfileRepository;
     private final LessonService lessonService;
 
     public AbsenseRespDto insertAttendance(AbsenseRqDto absenseRqDto) {
 
-        User user = userService.findUserByID(absenseRqDto.pupilId());
+        StudentProfile pupil = studentProfileRepository.findById(absenseRqDto.pupilId())
+                .orElseThrow(() -> new AbsenseCustomNotFoundException(
+                        "Student profile not found with ID: " + absenseRqDto.pupilId()));
         Lesson lesson = lessonService.findById(absenseRqDto.lessonId());
-        Attendance attendance = absenseMapper.toAttendance(absenseRqDto, lesson, user);
+        Attendance attendance = absenseMapper.toAttendance(absenseRqDto, lesson, pupil);
 
         attendance = insertAbsence(attendance);
 
@@ -39,28 +42,28 @@ public class AbsenseService {
     }
 
     public Attendance findAttendanceById(UUID id) {
-        return absenseRepository.findById(id).orElseThrow(()->new AbsenseCustomNotFoundException(id));
+        return absenseRepository.findById(id).orElseThrow(() -> new AbsenseCustomNotFoundException(id));
     }
 
     public Attendance updateAttendance(Attendance attendance) {
 
         Attendance attendance1 = findAttendanceById(attendance.getId());
 
-        if (absenseRepository.existsByLessonAndPupilAndPresentAndDateAndIdNot(attendance.getLesson(), attendance.getPupil(), attendance.getPresent(), attendance.getDate(), attendance.getId())) {
+        if (absenseRepository.existsByLessonAndPupilAndPresentAndIdNot(attendance.getLesson(), attendance.getPupil(),
+                attendance.getPresent(), attendance.getId())) {
             throw new AbsenseCustomNotFoundException("Duplicate attendance record exists for the given parameters.");
         }
 
         attendance1.setPresent(attendance.getPresent());
         attendance1.setPupil(attendance.getPupil());
         attendance1.setLesson(attendance.getLesson());
-        attendance1.setDate(attendance.getDate());
 
         return absenseRepository.save(attendance1);
     }
 
-
     public Attendance checkAttendance(UUID id) {
-        return absenseRepository.findById(id).orElseThrow(() -> new AbsenseCustomNotFoundException("No attendance record found with ID: " + id));
+        return absenseRepository.findById(id)
+                .orElseThrow(() -> new AbsenseCustomNotFoundException("No attendance record found with ID: " + id));
     }
 
     public double calculateAttendance(UUID pupilId) {
@@ -78,7 +81,5 @@ public class AbsenseService {
 
         return totalDays > 0 ? ((double) daysPresent / totalDays) * 100 : 0.0;
     }
-
-
 
 }

@@ -6,7 +6,7 @@ import server.business.mapper.LessonMapper;
 import server.data.entity.Lesson;
 import server.data.entity.SchoolClass;
 import server.data.entity.Subject;
-import server.data.entity.TeacherOfSubject;
+import server.data.entity.TeacherAssignment;
 import server.data.repository.LessonRepository;
 import server.presentation.dto.request.LessonRqDto;
 import server.presentation.dto.response.LessonRespDto;
@@ -30,9 +30,9 @@ public class LessonService {
 
         Subject subject = subjectService.findById(lessonRqDto.subjectId());
         SchoolClass schoolClass = schoolClassService.findClassById(lessonRqDto.classId());
-        TeacherOfSubject teacherOfSubject =  teacherOfSubjectService.findById(lessonRqDto.teacherOfSubjectId());
+        TeacherAssignment teacherAssignment =  teacherOfSubjectService.findById(lessonRqDto.teacherOfSubjectId());
 
-        Lesson lesson = lessonMapper.toLesson(lessonRqDto, schoolClass, subject, teacherOfSubject);
+        Lesson lesson = lessonMapper.toLesson(lessonRqDto, schoolClass, subject, teacherAssignment);
 
         lesson = addLesson(lesson);
 

@@ -22,9 +22,9 @@ public class SchoolClass {
     @Column
     private Integer year;
 
-    @OneToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "teacher_id", nullable = false)
-    private User teacher;
+    private TeacherProfile classTeacher;
 
     @Column
     private Integer maxCapacity;

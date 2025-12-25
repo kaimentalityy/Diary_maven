@@ -3,10 +3,10 @@ package server.business.service;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.WeekScheduleMapper;
+import server.data.entity.Schedule;
 import server.data.enums.DayOfWeek;
 import server.data.entity.Lesson;
-import server.data.entity.WeekSchedule;
-import server.data.repository.WeekScheduleRepository;
+import server.data.repository.ScheduleRepository;
 import server.presentation.dto.request.WeekScheduleRqDto;
 import server.presentation.dto.response.WeekScheduleRespDto;
 import server.utils.exception.internalerror.DatabaseOperationExceptionCustom;
@@ -19,42 +19,42 @@ import java.util.UUID;
 @AllArgsConstructor
 public class WeekScheduleService {
 
-    private final WeekScheduleRepository weekScheduleRepository;
+    private final ScheduleRepository scheduleRepository;
     private final LessonService lessonService;
     private final WeekScheduleMapper weekScheduleMapper;
 
-    public WeekSchedule insertLessonInSchedule(WeekSchedule schedule) {
-        if (weekScheduleRepository.existsByLessonAndDayOfWeekAndLessonNumber(schedule.getLesson(), schedule.getDayOfWeek(), schedule.getLessonNumber())) {
+    public Schedule insertLessonInSchedule(Schedule schedule) {
+        if (scheduleRepository.existsByLessonAndDayOfWeekAndLessonNumber(schedule.getLesson(), schedule.getDayOfWeek(), schedule.getLessonNumber())) {
             throw new DatabaseOperationExceptionCustom("Schedule already exists.");
         }
-        return weekScheduleRepository.save(schedule);
+        return scheduleRepository.save(schedule);
     }
 
     public WeekScheduleRespDto addLessonWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
 
         Lesson lesson = lessonService.findById(weekScheduleRqDto.lessonId());
         DayOfWeek day = DayOfWeek.getById(weekScheduleRqDto.dayOfWeek());
-        WeekSchedule weekSchedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto, day, lesson);
+        Schedule schedule = weekScheduleMapper.toWeekSchedule(weekScheduleRqDto, day, lesson);
 
-        weekSchedule = insertLessonInSchedule(weekSchedule);
+        schedule = insertLessonInSchedule(schedule);
 
-        return weekScheduleMapper.toWeekScheduleRespDto(weekSchedule);
+        return weekScheduleMapper.toWeekScheduleRespDto(schedule);
     }
 
     public void unscheduleLessonFromSchedule(UUID id) {
-        if (!weekScheduleRepository.existsById(id)) {
+        if (!scheduleRepository.existsById(id)) {
             throw new WeekScheduleCustomNotFoundException("Lesson not found");
         }
-        weekScheduleRepository.deleteById(id);
+        scheduleRepository.deleteById(id);
     }
 
     public Integer getLessonPlace(UUID id) {
-        return weekScheduleRepository.findLessonNumberById(id)
+        return scheduleRepository.findLessonNumberById(id)
                 .orElseThrow(() -> new WeekScheduleCustomNotFoundException("Lesson not found"));
     }
 
     public Double countTotalHoursAWeek(UUID lessonId) {
-        return (double) weekScheduleRepository.countTotalLessonsForWeek(lessonId);
+        return (double) scheduleRepository.countTotalLessonsForWeek(lessonId);
     }
 
     public List<Lesson> getAllLessonsInADay(int dayOfWeekValue, UUID lessonId) {
@@ -62,10 +62,10 @@ public class WeekScheduleService {
 
         Lesson lesson = lessonService.findById(lessonId);
 
-        List<WeekSchedule> entries = weekScheduleRepository.findByDayOfWeekAndLesson(dayOfWeek, lesson);
+        List<Schedule> entries = scheduleRepository.findByDayOfWeekAndLesson(dayOfWeek, lesson);
 
         return entries.stream()
-                .map(WeekSchedule::getLesson)
+                .map(Schedule::getLesson)
                 .toList();
     }
 }

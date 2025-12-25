@@ -6,7 +6,7 @@
                         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="005" author="kai">
-        <createTable tableName="teacherofsubject">
+        <createTable tableName="teacher_assignment">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
@@ -14,6 +14,9 @@
                 <constraints nullable="false"/>
             </column>
             <column name="teacher_id" type="UUID">
+                <constraints nullable="false"/>
+            </column>
+            <column name="class_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
         </createTable>

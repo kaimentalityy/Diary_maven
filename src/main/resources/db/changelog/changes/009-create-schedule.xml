@@ -6,14 +6,14 @@
                         https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
 
     <changeSet id="009" author="kai">
-        <createTable tableName="weekschedule">
+        <createTable tableName="schedule">
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="day_of_week" type="INT">
+            <column name="day_of_week" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
-            <column name="lesson_id" type="UUID">
+            <column name="assignment_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
             <column name="lesson_number" type="INT">

@@ -10,16 +10,10 @@
             <column name="id" type="UUID">
                 <constraints primaryKey="true"/>
             </column>
-            <column name="class_id" type="UUID">
+            <column name="schedule_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="teacher_of_subject_id" type="UUID">
-                <constraints nullable="false"/>
-            </column>
-            <column name="lesson_date" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
-            <column name="subject_id" type="UUID">
+            <column name="lesson_date" type="datetime">
                 <constraints nullable="false"/>
             </column>
         </createTable>

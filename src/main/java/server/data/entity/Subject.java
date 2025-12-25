@@ -16,11 +16,6 @@ public class Subject {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @JoinColumn(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
-
-    @ManyToOne
-    @JoinColumn(name = "class_id", nullable = false)
-    private SchoolClass schoolClass;
-
 }

@@ -25,9 +25,7 @@
             <column name="role_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="blocked" type="BOOLEAN" defaultValueBoolean="false"/>
-            <column name="class_id" type="UUID"/>
-            <column name="age" type="INT">
+            <column name="blocked" type="BOOLEAN" defaultValueBoolean="false">
                 <constraints nullable="false"/>
             </column>
         </createTable>

@@ -33,28 +33,29 @@ public class MainFacade {
     private final UserMapper userMapper;
     private final RoleService roleService;
     private final TeacherMapper teacherMapper;
+    private final server.data.repository.StudentProfileRepository studentProfileRepository;
 
-    public LessonRespDto addLesson(LessonRqDto lessonRqDto){
+    public LessonRespDto addLesson(LessonRqDto lessonRqDto) {
         return lessonService.assignLesson(lessonRqDto);
     }
 
-    public SchoolClassRespDto addSchoolClass(SchoolClassRqDto schoolClassRqDto){
+    public SchoolClassRespDto addSchoolClass(SchoolClassRqDto schoolClassRqDto) {
         return schoolClassService.createSchoolClass(schoolClassRqDto);
     }
 
-    public SubjectRespDto addSubject(SubjectRqDto subjectRqDto){
+    public SubjectRespDto addSubject(SubjectRqDto subjectRqDto) {
         return subjectService.addSubject(subjectRqDto);
     }
 
-    public WeekScheduleRespDto addWeekSchedule(WeekScheduleRqDto weekScheduleRqDto){
+    public WeekScheduleRespDto addWeekSchedule(WeekScheduleRqDto weekScheduleRqDto) {
         return weekScheduleService.addLessonWeekSchedule(weekScheduleRqDto);
     }
 
-    public UserRespDto addUser(CreateUserRqDto userRqDto){
+    public UserRespDto addUser(CreateUserRqDto userRqDto) {
         return userService.createUser(userRqDto);
     }
 
-    public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto){
+    public TeacherRespDto addTeacher(TeacherRqDto teacherRqDto) {
         return teacherOfSubjectService.addTeacher(teacherRqDto);
     }
 
@@ -107,7 +108,7 @@ public class MainFacade {
         return subjectService.findById(id);
     }
 
-    public Grades findGradeById(UUID id) {
+    public Grade findGradeById(UUID id) {
         return gradesService.findGradeById(id);
     }
 
@@ -119,7 +120,7 @@ public class MainFacade {
         return lessonService.findById(id);
     }
 
-    public TeacherOfSubject findTeacherById(UUID id) {
+    public TeacherAssignment findTeacherById(UUID id) {
         return teacherOfSubjectService.findById(id);
     }
 
@@ -154,16 +155,18 @@ public class MainFacade {
         return gradesService.calculateAverageGrade(id, findBySubjectsId(subject));
     }
 
-    public AttendancePercentageResponse calculateAttendancePercent(AttendancePercentageRequest attendancePercentageRequest) {
+    public AttendancePercentageResponse calculateAttendancePercent(
+            AttendancePercentageRequest attendancePercentageRequest) {
         double totalHours = weekScheduleService.countTotalHoursAWeek(attendancePercentageRequest.classId());
         double attended = absenseService.calculateAttendance(attendancePercentageRequest.userId());
 
         if (totalHours == 0) {
-            throw new DatabaseOperationExceptionCustom("No hours recorded for class: " + attendancePercentageRequest.classId());
+            throw new DatabaseOperationExceptionCustom(
+                    "No hours recorded for class: " + attendancePercentageRequest.classId());
         }
 
         double percentage = (attended / totalHours) * 100;
-        
+
         return absenseMapper.toAttendancePercentageResponse(attendancePercentageRequest, percentage);
     }
 
@@ -173,11 +176,14 @@ public class MainFacade {
 
     public AbsenseRespDto updateAttendance(UpdateAbsenseRqDto updateAbsenseRqDto) {
 
-        User user = userService.findUserByID(updateAbsenseRqDto.pupilId());
+        StudentProfile pupil = studentProfileRepository.findById(updateAbsenseRqDto.pupilId())
+                .orElseThrow(() -> new server.utils.exception.notfound.AbsenseCustomNotFoundException(
+                        "Student profile not found with ID: " + updateAbsenseRqDto.pupilId()));
 
         Lesson lesson = findLessonById(updateAbsenseRqDto.lessonId());
 
-        Attendance attendance = absenseService.updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto, lesson, user));
+        Attendance attendance = absenseService
+                .updateAttendance(absenseMapper.toAttendanceForUpdate(updateAbsenseRqDto, lesson, pupil));
 
         return absenseMapper.toAttendanceRespDto(attendance);
     }
@@ -194,18 +200,18 @@ public class MainFacade {
     }
 
     public GradeRespDto updateGrade(UpdateGradeRqDto dto) {
-        Grades updatedGrade = gradesService.updateGrade(dto.id(), dto.column(),  dto.value());
+        Grade updatedGrade = gradesService.updateGrade(dto.id(), dto.column(), dto.value());
         return gradesMapper.toGradeRespDto(updatedGrade);
     }
 
-    //TODO remake this method (fix the rq and place in mapper)
-
+    // TODO remake this method (fix the rq and place in mapper)
 
     public TeacherRespDto updateTeacher(UpdateTeacherRqDto updateTeacherRqDto) {
 
         User user = userService.findUserByID(updateTeacherRqDto.teacherId());
         Subject subject = subjectService.findById(updateTeacherRqDto.subjectId());
-        TeacherOfSubject updatedTeacher = teacherOfSubjectService.updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto, subject, user));
+        TeacherAssignment updatedTeacher = teacherOfSubjectService
+                .updateTeacher(teacherMapper.toTeacherForUpdate(updateTeacherRqDto, subject, user));
 
         return teacherMapper.toTeacherRespDto(updatedTeacher);
     }

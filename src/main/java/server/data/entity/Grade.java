@@ -9,22 +9,21 @@ import java.util.UUID;
 @Data
 @Entity
 @Table(name = "grades")
-public class Grades {
+public class Grade {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pupil_id", nullable = false)
-    private User pupil;
+    private StudentProfile student;
 
     @Column(nullable = false)
-    private String grade;
+    private Integer grade;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 }
-

@@ -17,17 +17,9 @@ public class Lesson {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "class_id", nullable = false)
-    private SchoolClass schoolClass;
-
-    @ManyToOne
-    @JoinColumn(name = "teacher_of_subject_id", nullable = false)
-    private TeacherOfSubject teacherOfSubject;
-
-    @ManyToOne
-    @JoinColumn(name = "subject_id", nullable = false)
-    private Subject subject;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "schedule_id", nullable = false)
+    private Schedule schedule;
 
     @Column(nullable = false)
     private LocalDateTime lessonDate;

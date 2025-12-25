@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
-import java.sql.Date;
 import java.util.UUID;
 
 @Data
@@ -17,17 +16,14 @@ public class Attendance {
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "lesson_id", nullable = false)
     private Lesson lesson;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pupil_id", nullable = false)
-    private User pupil;
+    private StudentProfile pupil;
 
     @Column(nullable = false)
     private Boolean present;
-
-    @Column(nullable = false)
-    private Date date;
 }

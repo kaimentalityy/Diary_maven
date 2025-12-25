@@ -2,10 +2,10 @@ package server.data.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import server.data.entity.TeacherAssignment;
+import server.data.entity.StudentProfile;
 
 import java.util.UUID;
 
 @Repository
-public interface TeacherOfSubjectRepository extends JpaRepository<TeacherAssignment, UUID> {
+public interface StudentProfileRepository extends JpaRepository<StudentProfile, UUID> {
 }

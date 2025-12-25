@@ -14,8 +14,8 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/week-schedules")
-public class WeekScheduleController {
+@RequestMapping("/api/schedules")
+public class ScheduleController {
 
     private final MainFacade facade;
 

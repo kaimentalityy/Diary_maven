@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                        https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="030" author="kai">
+        <addUniqueConstraint
+                tableName="teacher_assignment"
+                columnNames="teacher_id, subject_id, class_id"
+                constraintName="uk_teacher_subject_class"/>
+
+        <addUniqueConstraint
+                tableName="schedule"
+                columnNames="assignment_id, day_of_week, lesson_number"
+                constraintName="uk_schedule_assignment_day_lesson"/>
+
+        <addUniqueConstraint
+                tableName="grades"
+                columnNames="pupil_id, lesson_id"
+                constraintName="uk_grade_student_lesson"/>
+
+        <addUniqueConstraint
+                tableName="attendance"
+                columnNames="pupil_id, lesson_id"
+                constraintName="uk_attendance_student_lesson"/>
+    </changeSet>
+
+</databaseChangeLog>

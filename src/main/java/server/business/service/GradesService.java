@@ -3,7 +3,7 @@ package server.business.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.GradesMapper;
-import server.data.entity.Grades;
+import server.data.entity.Grade;
 import server.data.entity.Lesson;
 import server.data.entity.User;
 import server.data.repository.GradesRepository;
@@ -30,22 +30,22 @@ public class GradesService {
 
         User user = userService.findUserByID(gradeRqDto.pupilId());
         Lesson lesson = lessonService.findById(gradeRqDto.lessonId());
-        Grades grades = gradesMapper.toGrade(gradeRqDto, user, lesson);
+        Grade grade = gradesMapper.toGrade(gradeRqDto, user, lesson);
 
-        grades = giveGrade(grades);
+        grade = giveGrade(grade);
 
-        return gradesMapper.toGradeRespDto(grades);
+        return gradesMapper.toGradeRespDto(grade);
     }
 
-    public Grades giveGrade(Grades grades) {
-        if (gradesRepository.existsByPupilAndLessonAndGradeAndIdNot(grades.getPupil(), grades.getLesson(), grades.getGrade(), grades.getId())) {
+    public Grade giveGrade(Grade grade) {
+        if (gradesRepository.existsByPupilAndLessonAndGradeAndIdNot(grade.getPupil(), grade.getLesson(), grade.getGrade(), grade.getId())) {
             throw new GradeAlreadyExistsExceptionCustom("Duplicate grade for pupil and lesson.");
         }
 
-        return gradesRepository.save(grades);
+        return gradesRepository.save(grade);
     }
 
-    public Grades findGradeById(UUID id) {
+    public Grade findGradeById(UUID id) {
         return gradesRepository.findById(id).orElseThrow(() -> new GradeCustomNotFoundException(id));
     }
 
@@ -81,8 +81,8 @@ public class GradesService {
     }
 
 
-    public Grades updateGrade(UUID id, String column, String value) {
-        Grades grade = gradesRepository.findById(id)
+    public Grade updateGrade(UUID id, String column, String value) {
+        Grade grade = gradesRepository.findById(id)
                 .orElseThrow(() -> new GradeCustomNotFoundException("Grade not found: " + id));
 
         switch (column) {
@@ -109,7 +109,7 @@ public class GradesService {
 
         return gradesRepository.findByPupilAndLesson_IdIn(pupil, lessonIds)
                 .stream()
-                .map(Grades::getGrade)
+                .map(Grade::getGrade)
                 .toList();
     }
 

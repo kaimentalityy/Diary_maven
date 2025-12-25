@@ -9,19 +9,19 @@ import java.util.UUID;
 
 @Data
 @Entity
-@Table(name = "weekschedule")
-public class WeekSchedule {
+@Table(name = "schedule")
+public class Schedule {
 
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(name = "UUID", strategy = "org.hibernate.id.UUIDGenerator")
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "lesson_id", nullable = false)
-    private Lesson lesson;
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "assignment_id")
+    private TeacherAssignment teachingAssignment;
 
-    @Enumerated(EnumType.ORDINAL)
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private DayOfWeek dayOfWeek;
 

@@ -12,13 +12,12 @@
     <include file="changes/006-create-lesson.xml" relativeToChangelogFile="true"/>
     <include file="changes/007-create-attendance.xml" relativeToChangelogFile="true"/>
     <include file="changes/008-create-grades.xml" relativeToChangelogFile="true"/>
-    <include file="changes/009-create-weekschedule.xml" relativeToChangelogFile="true"/>
+    <include file="changes/009-create-schedule.xml" relativeToChangelogFile="true"/>
+    <include file="changes/028-create-profiles.xml" relativeToChangelogFile="true"/>
     <include file="changes/010-add-foreign-keys.xml" relativeToChangelogFile="true"/>
     <include file="changes/020-insert-default-roles.xml" relativeToChangelogFile="true"/>
-    <include file="changes/021-create-dayofweek.xml" relativeToChangelogFile="true"/>
-    <include file="changes/022-insert-days-of-week.xml" relativeToChangelogFile="true"/>
-    <include file="changes/024-modify-subject-table.xml" relativeToChangelogFile="true"/>
-    <include file="changes/025-drop-dayofweek-table.xml" relativeToChangelogFile="true"/>
-    <include file="changes/026-create-files-table.xml" relativeToChangelogFile="true"/>
     <include file="changes/027-create-subject_material-table.xml" relativeToChangelogFile="true"/>
+    <include file="changes/030-add-unique-constraints.xml" relativeToChangelogFile="true"/>
+    <include file="changes/031-remove-user-names.xml" relativeToChangelogFile="true"/>
+    <include file="changes/032-fix-nullable-constraints.xml" relativeToChangelogFile="true"/>
 </databaseChangeLog>

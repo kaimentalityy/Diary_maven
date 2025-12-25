@@ -16,10 +16,7 @@
             <column name="pupil_id" type="UUID">
                 <constraints nullable="false"/>
             </column>
-            <column name="is_present" type="BOOLEAN">
-                <constraints nullable="false"/>
-            </column>
-            <column name="date" type="TIMESTAMP">
+            <column name="present" type="BOOLEAN">
                 <constraints nullable="false"/>
             </column>
         </createTable>

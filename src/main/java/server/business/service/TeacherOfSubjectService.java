@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import server.business.mapper.TeacherMapper;
 import server.data.entity.Subject;
-import server.data.entity.TeacherOfSubject;
+import server.data.entity.TeacherAssignment;
 import server.data.entity.User;
 import server.data.repository.TeacherOfSubjectRepository;
 import server.presentation.dto.request.TeacherRqDto;
@@ -26,23 +26,23 @@ public class TeacherOfSubjectService {
 
         Subject subject = subjectService.findById(teacherRqDto.subjectId());
         User teacher = userService.findUserByID(teacherRqDto.teacherId());
-        TeacherOfSubject teacherOfSubject = teacherMapper.toTeacherOfSubject(teacherRqDto, teacher, subject);
+        TeacherAssignment teacherAssignment = teacherMapper.toTeacherOfSubject(teacherRqDto, teacher, subject);
 
-        teacherOfSubject = addTeacher(teacherOfSubject);
+        teacherAssignment = addTeacher(teacherAssignment);
 
-        return teacherMapper.toTeacherRespDto(teacherOfSubject);
+        return teacherMapper.toTeacherRespDto(teacherAssignment);
     }
 
-    public TeacherOfSubject addTeacher(TeacherOfSubject teacherOfSubject) {
-        return teacherOfSubjectRepository.save(teacherOfSubject);
+    public TeacherAssignment addTeacher(TeacherAssignment teacherAssignment) {
+        return teacherOfSubjectRepository.save(teacherAssignment);
     }
 
     public void deleteTeacher(UUID id) {
         teacherOfSubjectRepository.deleteById(id);
     }
 
-    public TeacherOfSubject updateTeacher(TeacherOfSubject updatedData) {
-        TeacherOfSubject existing = teacherOfSubjectRepository.findById(updatedData.getId())
+    public TeacherAssignment updateTeacher(TeacherAssignment updatedData) {
+        TeacherAssignment existing = teacherOfSubjectRepository.findById(updatedData.getId())
                 .orElseThrow(() -> new TeacherCustomNotFoundException("Teacher not found with ID: " + updatedData.getId()));
 
         existing.setSubject(updatedData.getSubject());
@@ -51,7 +51,7 @@ public class TeacherOfSubjectService {
         return teacherOfSubjectRepository.save(existing);
     }
 
-    public TeacherOfSubject findById(UUID id) {
+    public TeacherAssignment findById(UUID id) {
         return teacherOfSubjectRepository.findById(id)
                 .orElseThrow(() -> new TeacherCustomNotFoundException("Teacher not found with ID: " + id));
     }

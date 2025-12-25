@@ -25,7 +25,7 @@ public class UserController {
     }
 
     @ResponseStatus(HttpStatus.OK)
-    @PatchMapping("/assign/{userId}/to/{classId}")
+    @PatchMapping("/assign/{userId}/{classId}")
     public void assignPupilToClass(@PathVariable UUID userId, @PathVariable UUID classId) {
         facade.assignPupilToClass(classId, userId);
     }
